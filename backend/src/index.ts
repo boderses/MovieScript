@@ -1,8 +1,8 @@
+import 'reflect-metadata';
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import router from "./routes";
-import 'reflect-metadata';
 import dotenv from 'dotenv';
 
 dotenv.config();
