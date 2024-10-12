@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const StyledListWrapper = styled.div`
   display: flex;
@@ -7,8 +7,10 @@ export const StyledListWrapper = styled.div`
   margin: 0;
 `;
 
-export const StyledNothingFoundImage = styled.img`
-  width: 100%;
-  max-width: 600px;
-  height: 100%;
+export const StyledCenterContainer = styled.div`
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;

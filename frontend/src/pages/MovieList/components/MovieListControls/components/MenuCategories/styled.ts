@@ -1,59 +1,52 @@
-import { Checkbox, Menu, MenuItem, styled } from '@mui/material';
+import { Menu, styled } from "@mui/material";
 
 export const StyledMenu = styled(Menu)(({ theme }) => ({
-  '& .MuiMenu-paper': {
+  "& .MuiMenu-paper": {
     marginLeft: 4,
     maxWidth: 250,
     marginTop: 12,
-    width: '100%',
-    position: 'relative',
+    width: "100%",
+    position: "relative",
     zIndex: 1,
-    overflow: 'visible',
+    overflow: "visible",
   },
 
-  '& .MuiMenu-list': {
+  "& .MuiMenu-list": {
     maxHeight: 196,
-    overflow: 'auto',
-    '&::-webkit-scrollbar': {
-      width: '0.3rem',
+    overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: "0.3rem",
     },
-    '&::-webkit-scrollbar-track': {
-      webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+    "&::-webkit-scrollbar-track": {
+      webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
     },
-    '&::-webkit-scrollbar-thumb': {
+    "&::-webkit-scrollbar-thumb": {
       backgroundColor: theme.palette.grey[600],
       borderRadius: 4,
     },
   },
 
-  '& .MuiMenu-paper:before': {
+  "& .MuiMenu-paper:before": {
     content: '""',
-    display: 'block',
-    position: 'absolute',
+    display: "block",
+    position: "absolute",
     top: 0,
-    left: '10%',
+    left: "10%",
     width: 16,
     height: 16,
-    backgroundColor: '#121212',
-    transform: 'translateY(-50%) rotate(45deg)',
+    backgroundColor: "#121212",
+    transform: "translateY(-50%) rotate(45deg)",
     zIndex: 0,
     backgroundImage:
-      'linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))',
+      "linear-gradient(rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.12))",
   },
 }));
 
-export const StyledMenuItem = styled(MenuItem)(() => ({
-  height: 45,
-}));
-
-export const StyledCheckbox = styled(Checkbox)(() => ({
-  color: '#ffffff',
-
-  '&:hover': {
-    backgroundColor: 'transparent',
-  },
-
-  '&.Mui-checked': {
-    color: '#ffffff',
-  },
-}));
+export const StyledCenterContainer = styled("div")`
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;

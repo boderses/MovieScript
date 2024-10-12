@@ -54,7 +54,11 @@ export const StyledCardContainer = styled(Link)`
   }
 `;
 
-export const StyledCard = styled(Card)`
+interface StyledCardProps {
+  image: string;
+}
+
+export const StyledCard = styled(Card)<StyledCardProps>`
   height: 400px;
   background-image:  url(${(props: { image: string }) => props.image}) !important;
   background-repeat: no-repeat;
