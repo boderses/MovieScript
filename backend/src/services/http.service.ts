@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { Error } from 'mongoose';
+
 
 function formatResponse<T>(error: boolean, data: T) {
   return { error, data };
