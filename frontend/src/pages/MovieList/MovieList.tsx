@@ -10,6 +10,7 @@ import { MovieCategoryUserInput } from '../../types';
 import { MODAL_NAME } from '../../store/modal/constants/modal';
 import { MovieItem } from "./components/MovieItem";
 import { movieListFetchStart } from "./thunks/movieListFetch";
+import { movieListCategoryCreateStart } from './thunks/movieListCreateCategory';
 import { movieListFetchSelector } from "./selectors/movieListFetch";
 import { MovieListControls } from "./components/MovieListControls";
 import { MovieListSkeleton } from "./components/MovieListSkeleton";
@@ -30,9 +31,9 @@ export const MovieList = () => {
 
   const handleCreateCategorySubmit = useCallback(
     (data: MovieCategoryUserInput) => {
-      console.log(data);
+      dispatch(movieListCategoryCreateStart({ category: data }));
     },
-    []
+    [dispatch]
   );
 
   useEffect(() => {
