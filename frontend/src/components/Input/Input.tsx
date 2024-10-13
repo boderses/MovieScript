@@ -1,7 +1,7 @@
 import React from "react";
-import { TextField, ThemeProvider } from '@mui/material';
+import { TextField, ThemeProvider } from "@mui/material";
 import { Path, PathValue, RefCallBack } from "react-hook-form";
-import { getTheme } from '../../styles/theme';
+import { getTheme } from "../../styles/theme";
 
 const defaultProps = {
   error: "",
@@ -20,6 +20,7 @@ type InputProps<T> = {
   label: string;
   valueWatcher?: PathValue<T, Path<T>>;
   disabled?: boolean;
+  min?: number;
   type?: string;
   error?: string;
   multiline?: boolean;
@@ -36,14 +37,20 @@ export const Input = <T,>(props: InputProps<T>) => {
     valueWatcher,
     multiline,
     rows,
+    min,
   } = props;
 
   return (
-    <ThemeProvider theme={getTheme('light')}>
+    <ThemeProvider theme={getTheme("light")}>
       <TextField
         color="secondary"
         multiline={multiline}
         rows={rows}
+        InputProps={{
+          inputProps: {
+            min,
+          },
+        }}
         type={type}
         label={label}
         disabled={disabled}

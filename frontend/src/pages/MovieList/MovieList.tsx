@@ -5,7 +5,7 @@ import { useAppDispatch } from "../../store";
 import { modalClose } from "../../store/modal/reducer/modal";
 import { MODAL_NAME } from "../../store/modal/constants/modal";
 import { modalSelector } from "../../store/modal/selectors/modal";
-import { MovieCategoryUserInput, Position, MovieUserInput } from "../../types";
+import { MovieCategoryUserInput, Position, MovieFormSchema } from "../../types";
 import { Preloader } from "../../components/Preloader";
 import { Error } from "../../components/Error";
 import { CenterContainer } from "../../components/CenterContainer";
@@ -54,7 +54,7 @@ export const MovieList = () => {
   );
 
   const handleCreateMovieSubmit = useCallback(
-    (movie: MovieUserInput) => {
+    (movie: MovieFormSchema) => {
       dispatch(movieListCreateMovieStart({ movie }));
     },
     [dispatch]
