@@ -1,26 +1,31 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { Preloader } from "../../components/Preloader";
-import { Error } from '../../components/Error';
+import { Error } from "../../components/Error";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../store";
-import { modalClose } from '../../store/modal/reducer/modal';
-import { modalSelector } from '../../store/modal/selectors/modal';
-import { MovieCategoryUserInput } from '../../types';
-import { MODAL_NAME } from '../../store/modal/constants/modal';
+import { modalClose } from "../../store/modal/reducer/modal";
+import { modalSelector } from "../../store/modal/selectors/modal";
+import { MovieCategoryUserInput, Position } from "../../types";
+import { MODAL_NAME } from "../../store/modal/constants/modal";
+import { CenterContainer } from "../../components/CenterContainer";
 import { MovieItem } from "./components/MovieItem";
 import { movieListFetchStart } from "./thunks/movieListFetch";
-import { movieListCategoryCreateStart } from './thunks/movieListCreateCategory';
+import { movieListCategoryCreateStart } from "./thunks/movieListCreateCategory";
 import { movieListFetchSelector } from "./selectors/movieListFetch";
+import { movieListCreateCategorySelector } from "./selectors/movieListCreateCategory";
 import { MovieListControls } from "./components/MovieListControls";
 import { MovieListSkeleton } from "./components/MovieListSkeleton";
-import { ModalCategoryCreate } from './components/ModalCategoryCreate';
-import { StyledListWrapper, StyledCenterContainer } from "./styled";
+import { ModalCategoryCreate } from "./components/ModalCategoryCreate";
+import { StyledListWrapper } from "./styled";
 
 export const MovieList = () => {
   const [paginateLoading, setPaginateLoading] = useState(false);
 
   const { data: movies, loading, error } = useSelector(movieListFetchSelector);
+  const { loading: categoryCreateLoading } = useSelector(
+    movieListCreateCategorySelector
+  );
   const { open, name } = useSelector(modalSelector);
 
   const dispatch = useAppDispatch();
@@ -43,9 +48,9 @@ export const MovieList = () => {
   return (
     <>
       {loading && !error && movies.length > 0 && (
-        <StyledCenterContainer>
+        <CenterContainer position={Position.fixed}>
           <Preloader width={96} height={96} />
-        </StyledCenterContainer>
+        </CenterContainer>
       )}
       {!error && <MovieListControls />}
       {loading && !error && movies.length === 0 && (
@@ -87,7 +92,7 @@ export const MovieList = () => {
       {error && !loading && <Error>{error}</Error>}
       <ModalCategoryCreate
         handleClose={handleModalClose}
-        loading={false}
+        loading={categoryCreateLoading}
         handleCreateCategory={handleCreateCategorySubmit}
         open={open && name === MODAL_NAME.CATEGORY_CREATE}
       />

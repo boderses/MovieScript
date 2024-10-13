@@ -32,3 +32,11 @@ export type MoviesQuery = {
   limit?: string;
   sort?: SortMoviesOptions;
 };
+
+export enum Position {
+  static = 'static',
+  absolute = 'absolute',
+  relative = 'relative',
+  fixed = 'fixed',
+  sticky = 'sticky',
+}

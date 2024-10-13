@@ -9,3 +9,10 @@ export const getMovies = async () => {
   }
 };
 
+export const getMovie = async (id: string) => {
+  try {
+    return await client.get<never, Movie>(`/movies/${id}`);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
