@@ -1,11 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { StyledMenu, StyledMenuItem } from './styled';
+import React from "react";
+import PropTypes from "prop-types";
+import { StyledMenu, StyledMenuItem } from "./styled";
 
 type MenuAddProps = {
+  handleCreateCategory: () => void;
+  anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
-  anchorEl: Element | null;
 };
 
 export const MenuAdd = (props: MenuAddProps) => {
@@ -18,11 +19,11 @@ export const MenuAdd = (props: MenuAddProps) => {
       anchorEl={anchorEl}
       onClose={onClose}
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+        vertical: "bottom",
+        horizontal: "left",
       }}
       MenuListProps={{
-        'aria-labelledby': 'add-button',
+        "aria-labelledby": "add-button",
       }}
     >
       <StyledMenuItem onClick={() => onClose()}>Movie</StyledMenuItem>

@@ -1,20 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { Preloader } from "../../components/Preloader";
+import { Error } from '../../components/Error';
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../store";
+import { modalClose } from '../../store/modal/reducer/modal';
+import { modalSelector } from '../../store/modal/selectors/modal';
+import { MovieCategoryUserInput } from '../../types';
+import { MODAL_NAME } from '../../store/modal/constants/modal';
 import { MovieItem } from "./components/MovieItem";
 import { movieListFetchStart } from "./thunks/movieListFetch";
 import { movieListFetchSelector } from "./selectors/movieListFetch";
 import { MovieListControls } from "./components/MovieListControls";
 import { MovieListSkeleton } from "./components/MovieListSkeleton";
+import { ModalCategoryCreate } from './components/ModalCategoryCreate';
 import { StyledListWrapper, StyledCenterContainer } from "./styled";
 
 export const MovieList = () => {
   const [paginateLoading, setPaginateLoading] = useState(false);
 
   const { data: movies, loading, error } = useSelector(movieListFetchSelector);
+  const { open, name } = useSelector(modalSelector);
+
   const dispatch = useAppDispatch();
+
+  const handleModalClose = useCallback(() => {
+    dispatch(modalClose());
+  }, [dispatch]);
+
+  const handleCreateCategorySubmit = useCallback(
+    (data: MovieCategoryUserInput) => {
+      console.log(data);
+    },
+    []
+  );
 
   useEffect(() => {
     dispatch(movieListFetchStart());
@@ -27,7 +46,7 @@ export const MovieList = () => {
           <Preloader width={96} height={96} />
         </StyledCenterContainer>
       )}
-      <MovieListControls />
+      {!error && <MovieListControls />}
       {loading && !error && movies.length === 0 && (
         <MovieListSkeleton moviesCount={8} />
       )}
@@ -64,6 +83,13 @@ export const MovieList = () => {
           )}
         </Box>
       )}
+      {error && !loading && <Error>{error}</Error>}
+      <ModalCategoryCreate
+        handleClose={handleModalClose}
+        loading={false}
+        handleCreateCategory={handleCreateCategorySubmit}
+        open={open && name === MODAL_NAME.CATEGORY_CREATE}
+      />
     </>
   );
 };
