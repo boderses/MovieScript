@@ -1,6 +1,6 @@
-import { PayloadAction } from '@reduxjs/toolkit';
-import { Movie } from '../../../types';
-import { MovieListFetchState } from '../reducers/movieListFetch';
+import { PayloadAction } from "@reduxjs/toolkit";
+import { Movie, MovieQueries } from "../../../types";
+import { MovieListFetchState } from "../reducers/movieListFetch";
 
 export const movieListFetchInProgressAction = (state: MovieListFetchState) => {
   state.loading = true;
@@ -25,4 +25,18 @@ export const movieListFetchErrorAction = (
 
   state.loading = false;
   state.error = error;
+};
+
+export const movieListAddQueryAction = (
+  state: MovieListFetchState,
+  action: PayloadAction<MovieQueries>
+) => {
+  state.queries = { ...state.queries, ...action.payload };
+};
+
+export const movieListRemoveQueryAction = (
+  state: MovieListFetchState,
+  action: PayloadAction<keyof MovieQueries>
+) => {
+  delete state.queries[action.payload];
 };

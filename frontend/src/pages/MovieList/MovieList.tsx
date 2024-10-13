@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { useSelector } from "react-redux";
+import { useSearchParams } from 'react-router-dom';
+
 import { useAppDispatch } from "../../store";
 import { modalClose } from "../../store/modal/reducer/modal";
 import { MODAL_NAME } from "../../store/modal/constants/modal";
@@ -27,6 +29,7 @@ import { StyledListWrapper } from "./styled";
 
 export const MovieList = () => {
   const [paginateLoading, setPaginateLoading] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const { data: movies, loading, error } = useSelector(movieListFetchSelector);
   const { loading: categoryCreateLoading } = useSelector(
@@ -61,8 +64,21 @@ export const MovieList = () => {
   );
 
   useEffect(() => {
-    dispatch(movieListFetchStart());
-  }, [dispatch]);
+    const timerId = setTimeout(() => {
+      dispatch(
+        movieListFetchStart(Object.fromEntries(Array.from(searchParams)))
+      );
+    }, 500);
+    return () => {
+      clearTimeout(timerId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get('search'), dispatch]);
+
+  useEffect(() => {
+    dispatch(movieListFetchStart(Object.fromEntries(Array.from(searchParams))));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.get('sort'), searchParams.get('categories'), dispatch]);
 
   return (
     <>
