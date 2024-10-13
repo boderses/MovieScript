@@ -10,12 +10,13 @@ import {
 
 import { Search } from "../../../../components/Search";
 import { useAppDispatch } from "../../../../store";
-import { movieListGetCategoriesSelector } from "../../selectors/movieListGetCategories";
-import { movieListGetCategoriesStart } from "../../thunks/movieListGetCategories";
-import { MenuCategories } from "../../../../components/MenuCategories";
-import { MenuAdd } from "./components/MenuAdd";
 import { modalOpen } from "../../../../store/modal/reducer/modal";
 import { MODAL_NAME } from "../../../../store/modal/constants/modal";
+import { movieListGetCategoriesSelector } from "../../selectors/movieListGetCategories";
+import { movieListGetCategoriesStart } from "../../thunks/movieListGetCategories";
+import { movieListBeforeCreateMovieStart } from "../../thunks/movieListCreateMovie";
+import { MenuCategories } from "../../components/MovieListControls/components/MenuCategories";
+import { MenuAdd } from "./components/MenuAdd";
 
 export const MovieListControls = () => {
   const dispatch = useAppDispatch();
@@ -59,15 +60,20 @@ export const MovieListControls = () => {
     setAnchorElAddMenu(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
   const handleCloseAddMenu = () => {
     setAnchorElAddMenu(null);
   };
 
-  const handleCreateCategory = useCallback(() => {
+  const handleOpenModalMovieCreate = useCallback(() => {
+    dispatch(modalOpen({ name: MODAL_NAME.MOVIE_CREATE }));
+    dispatch(movieListBeforeCreateMovieStart());
+  }, [dispatch]);
+
+  const handleOpenModalCategoryCreate = useCallback(() => {
     dispatch(modalOpen({ name: MODAL_NAME.CATEGORY_CREATE }));
   }, [dispatch]);
 
@@ -87,7 +93,7 @@ export const MovieListControls = () => {
       <Button
         color="secondary"
         variant="contained"
-        ria-controls={open ? "categories-menu" : undefined}
+        aria-controls={open ? "categories-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         onClick={handleOpenMenuCategories}
@@ -96,9 +102,9 @@ export const MovieListControls = () => {
         Categories
       </Button>
       <MenuCategories
-        // loading={loading}
-        // error={error}
-        // categories={categories}
+        loading={loading}
+        error={error}
+        categories={categories}
         onClose={handleClose}
         open={open}
         anchorEl={anchorEl}
@@ -127,7 +133,8 @@ export const MovieListControls = () => {
         Add
       </Button>
       <MenuAdd
-        handleCreateCategory={handleCreateCategory}
+        handleOpenModalCategoryCreate={handleOpenModalCategoryCreate}
+        handleOpenModalMovieCreate={handleOpenModalMovieCreate}
         anchorEl={anchorElAddMenu}
         open={openAddMenu}
         onClose={handleCloseAddMenu}

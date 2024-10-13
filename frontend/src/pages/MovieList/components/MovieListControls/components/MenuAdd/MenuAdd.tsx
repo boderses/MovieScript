@@ -3,14 +3,31 @@ import PropTypes from "prop-types";
 import { StyledMenu, StyledMenuItem } from "./styled";
 
 type MenuAddProps = {
-  handleCreateCategory: () => void;
+  handleOpenModalCategoryCreate: () => void;
+  handleOpenModalMovieCreate: () => void;
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
 };
 
 export const MenuAdd = (props: MenuAddProps) => {
-  const { open, anchorEl, onClose } = props;
+  const {
+    open,
+    handleOpenModalCategoryCreate,
+    handleOpenModalMovieCreate,
+    anchorEl,
+    onClose,
+  } = props;
+
+  const onClickCreateCategory = () => {
+    handleOpenModalCategoryCreate();
+    onClose();
+  };
+
+  const onClickCreateMovie = () => {
+    handleOpenModalMovieCreate();
+    onClose();
+  };
 
   return (
     <StyledMenu
@@ -26,8 +43,8 @@ export const MenuAdd = (props: MenuAddProps) => {
         "aria-labelledby": "add-button",
       }}
     >
-      <StyledMenuItem onClick={() => onClose()}>Movie</StyledMenuItem>
-      <StyledMenuItem onClick={() => onClose()}>Category</StyledMenuItem>
+      <StyledMenuItem onClick={onClickCreateMovie}>Movie</StyledMenuItem>
+      <StyledMenuItem onClick={onClickCreateCategory}>Category</StyledMenuItem>
     </StyledMenu>
   );
 };
