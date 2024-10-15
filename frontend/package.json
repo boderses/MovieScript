@@ -102,6 +102,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
+    "@types/lodash.debounce": "^4.0.9",
     "babel-jest": "^27.5.1",
     "browserslist": "^4.23.3",
     "eslint": "^8.57.1",

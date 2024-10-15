@@ -58,7 +58,7 @@ export const MovieForm = (props: MovieFormProps) => {
     watch,
     control,
     formState: { errors },
-  } = useForm<MovieUserInput>({ resolver: yupResolver(movieCreateSchema) });
+  } = useForm<MovieFormSchema>({ resolver: yupResolver(movieCreateSchema) });
 
   useEffect(() => reset(), [reset]);
 
@@ -145,7 +145,7 @@ export const MovieForm = (props: MovieFormProps) => {
                     }
                     MenuProps={{
                       PaperProps: {
-                        style: {
+                        sx: {
                           maxHeight: "200px",
                         },
                       },
