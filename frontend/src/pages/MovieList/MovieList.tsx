@@ -7,14 +7,26 @@ import { modalClose } from "../../store/modal/reducer/modal";
 import { MODAL_NAME } from "../../store/modal/constants/modal";
 import { modalSelector } from "../../store/modal/selectors/modal";
 import { MovieCategoryUserInput, Position, MovieFormSchema } from "../../types";
+
 import { Preloader } from "../../components/Preloader";
 import { Error } from "../../components/Error";
 import { CenterContainer } from "../../components/CenterContainer";
+import { setQueries } from "../../utils/setQueries";
+
 import {
   movieListCreateMovieSelector,
   movieListCreateMovieFetchCategoriesSelector,
 } from "./selectors/movieListCreateMovie";
-import { setQueries } from "../../utils/setQueries";
+import {
+  movieListCompareViewFetchSelector,
+  movieListCompareViewSelector,
+} from "./selectors/movieListCompareView";
+import { movieListAddQuery } from "./reducers/movieListFetch";
+import {
+  movieListCompareViewAddMovie,
+  movieListCompareViewRemoveMovie,
+} from "./reducers/movieListCompareView";
+
 import { movieListFetchStart } from "./thunks/movieListFetch";
 import { movieListCreateMovieStart } from "./thunks/movieListCreateMovie";
 import { movieListCreateCategoryStart } from "./thunks/movieListCreateCategory";
@@ -25,8 +37,8 @@ import { MovieListControls } from "./components/MovieListControls";
 import { MovieListSkeleton } from "./components/MovieListSkeleton";
 import { ModalCategoryCreate } from "./components/ModalCategoryCreate";
 import { ModalMovieCreate } from "./components/ModalMovieCreate";
+import { ModalMovieCompareView } from "./components/ModalMovieCompareView";
 import { StyledListWrapper } from "./styled";
-import { movieListAddQuery } from "./reducers/movieListFetch";
 
 export const MovieList = () => {
   const {
@@ -50,8 +62,25 @@ export const MovieList = () => {
     movieListCreateMovieFetchCategoriesSelector
   );
   const { open, name } = useSelector(modalSelector);
+  const compareMovieIds = useSelector(movieListCompareViewSelector);
+  const {
+    compareMovies,
+    loading: compareMoviesLoading,
+    error: compareMoviesError,
+  } = useSelector(movieListCompareViewFetchSelector);
 
   const dispatch = useAppDispatch();
+
+  const handleToggleCompareMovie = useCallback(
+    (id: string) => {
+      if (compareMovieIds.indexOf(id) > -1) {
+        dispatch(movieListCompareViewRemoveMovie({ id }));
+      } else {
+        dispatch(movieListCompareViewAddMovie({ id }));
+      }
+    },
+    [compareMovieIds, dispatch]
+  );
 
   const handleModalClose = useCallback(() => {
     dispatch(modalClose());
@@ -70,6 +99,10 @@ export const MovieList = () => {
     },
     [dispatch]
   );
+
+  const handleBeforeUnload = useCallback(() => {
+    localStorage.setItem("compareMovies", compareMovieIds.join(","));
+  }, [compareMovieIds]);
 
   const onClickShowMoreMovies = () => {
     let limit = Number(queries.limit) || OFFSET_LIMIT;
@@ -93,6 +126,12 @@ export const MovieList = () => {
     dispatch(movieListFetchStart());
   }, [dispatch]);
 
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [handleBeforeUnload]);
   return (
     <>
       {loading && !error && movies.length > 0 && (
@@ -115,6 +154,8 @@ export const MovieList = () => {
                   releaseDate={movie.releaseDate}
                   movieId={movie._id}
                   imagePath={movie.imagePath}
+                  compareMovieIds={compareMovieIds}
+                  handleToggleCompareMovie={handleToggleCompareMovie}
                 />
               ))}
             </StyledListWrapper>
@@ -154,6 +195,13 @@ export const MovieList = () => {
         fetchCategoriesLoading={fetchCategoriesLoading}
         handleClose={handleModalClose}
         handleCreateMovie={handleCreateMovieSubmit}
+      />
+      <ModalMovieCompareView
+        open={open && name === MODAL_NAME.MOVIE_COMPARE_VIEW}
+        handleClose={handleModalClose}
+        movies={compareMovies}
+        loading={compareMoviesLoading}
+        error={compareMoviesError}
       />
     </>
   );
