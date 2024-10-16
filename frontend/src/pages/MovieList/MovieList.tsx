@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 
 import { useAppDispatch } from "../../store";
@@ -160,7 +160,18 @@ export const MovieList = () => {
               ))}
             </StyledListWrapper>
           )}
-          {movies.length === 0 && !loading && <h1>Nothing was found</h1>}
+          {movies.length === 0 && !loading && (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography variant="h6" component="p">
+                Nothing was found...
+              </Typography>
+            </Box>
+          )}
         </>
       )}
       {movies.length >= OFFSET_LIMIT && (

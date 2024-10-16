@@ -59,7 +59,7 @@ export const MovieListControls = (props: MovieListControlsProps) => {
   } = useSelector(movieListGetCategoriesSelector);
   const dispatch = useAppDispatch();
 
-  const getMovieList = (query: { name: string; value: string }) => {
+  const getMovieList = (query: { name: string; value: string | null }) => {
     setQueries(query);
     dispatch(movieListFetchStart());
   };
@@ -82,7 +82,7 @@ export const MovieListControls = (props: MovieListControlsProps) => {
       return query;
     },
     desc: () => {
-      const query = { name: "sort", value: "" };
+      const query = { name: "sort", value: null };
       dispatch(movieListAddQuery({ query }));
       return query;
     },
@@ -124,7 +124,10 @@ export const MovieListControls = (props: MovieListControlsProps) => {
   }, [dispatch]);
 
   const handleChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    const query = { name: "search", value: event.target.value };
+    const query = {
+      name: "search",
+      value: event.target.value === "" ? null : event.target.value,
+    };
     dispatch(movieListAddQuery({ query }));
     debounceFn(query);
   };
@@ -143,7 +146,10 @@ export const MovieListControls = (props: MovieListControlsProps) => {
   const handleChangeCategory = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;
     const categoryList = typeof value === "string" ? value.split(",") : value;
-    const query = { name: "categories", value: categoryList.join(",") };
+    const query = {
+      name: "categories",
+      value: categoryList.length === 0 ? null : categoryList.join(","),
+    };
     dispatch(movieListAddQuery({ query }));
     getMovieList(query);
   };

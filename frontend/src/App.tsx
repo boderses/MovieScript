@@ -1,9 +1,10 @@
-import { Route, Routes } from 'react-router-dom';
-import { Layout } from './components/Layout';
-import { Home } from './pages/Home';
-import { MovieList } from './pages/MovieList';
-import { MovieDetails } from './pages/MovieDetails';
-import 'react-toastify/dist/ReactToastify.css';
+import { Route, Routes } from "react-router-dom";
+import { Layout } from "./components/Layout";
+import { Home } from "./pages/Home";
+import { MovieList } from "./pages/MovieList";
+import { MovieDetails } from "./pages/MovieDetails";
+import { NotFound } from "./pages/NotFound";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path=":id" element={<MovieDetails />} />
         </Route>
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
