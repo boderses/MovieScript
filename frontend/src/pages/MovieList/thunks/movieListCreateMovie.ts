@@ -1,19 +1,19 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
-import { MovieFormSchema, MovieCategory } from '../../../types';
-import { AppDispatch } from '../../../store';
-import { createMovie, createMovieImage  } from '../../../api/movies';
-import { getCategories } from '../../../api/categories';
-import { modalClose } from '../../../store/modal/reducer/modal';
+import { MovieFormSchema, MovieCategory } from "../../../types";
+import { AppDispatch } from "../../../store";
+import { createMovie, createMovieImage } from "../../../api/movies";
+import { getCategories } from "../../../api/categories";
+import { modalClose } from "../../../store/modal/reducer/modal";
 import {
   movieCreateInProgress,
   movieCreateError,
   movieCreateSuccess,
-} from '../reducers/movieListCreateMovie';
-import { movieListFetchStart  } from './movieListFetch';
+} from "../reducers/movieListCreateMovie";
+import { movieListFetchStart } from "./movieListFetch";
 
-const MOVIE_LIST_CREATE_MOVIE_START_TYPE = 'MOVIE_LIST_CREATE_MOVIE_START';
+const MOVIE_LIST_CREATE_MOVIE_START_TYPE = "MOVIE_LIST_CREATE_MOVIE_START";
 
 export const movieListCreateMovieStart = createAsyncThunk<
   void,
@@ -24,23 +24,26 @@ export const movieListCreateMovieStart = createAsyncThunk<
     const { movie } = data;
     const file = movie.imagePath[0];
     const formData = new FormData();
-    formData.append('file', file);
-
+    formData.append("file", file);
     const image = await createMovieImage(formData);
+
     const updatedMovie = {
       ...movie,
+      _id: image.id,
       imagePath: image.url,
-      duration: Number(movie.duration),
+      categories: movie.fetchCategories.filter((category) =>
+        movie.categories.includes(category.name)
+      ),
     };
     dispatch(movieCreateInProgress());
 
     await createMovie(updatedMovie);
     dispatch(movieCreateSuccess());
-    
+
     dispatch(modalClose());
 
     await dispatch(movieListFetchStart());
-    toast.success('Movie created successfully!');
+    toast.success("Movie created successfully!");
   } catch (error) {
     dispatch(movieCreateError({ error: error as string }));
     toast.error(error as string);
@@ -48,7 +51,7 @@ export const movieListCreateMovieStart = createAsyncThunk<
 });
 
 const MOVIE_LIST_BEFORE_CREATE_MOVIE_START_TYPE =
-  'MOVIE_LIST_BEFORE_CREATE_MOVIE_START';
+  "MOVIE_LIST_BEFORE_CREATE_MOVIE_START";
 
 export const movieListBeforeCreateMovieStart = createAsyncThunk<
   { data: MovieCategory[] },

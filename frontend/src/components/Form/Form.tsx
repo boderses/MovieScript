@@ -17,7 +17,6 @@ type FormProps<T extends FieldValues> = {
   hookFormData: UseFormReturn<T>;
   onCancel: () => void;
   onSubmit: (data: T) => void;
-  options?: T;
   fetchLoading?: boolean;
 };
 
@@ -29,7 +28,6 @@ export const Form = <T extends FieldValues>(props: FormProps<T>) => {
     onSubmit,
     hookFormData,
     inputsInfo,
-    options,
   } = props;
 
   const {

@@ -1,5 +1,10 @@
-import { Button, Typography } from '@mui/material';
-import styled from 'styled-components';
+import {
+  Button,
+  Typography,
+  TableRow,
+  styled as styledMUI,
+} from "@mui/material";
+import styled from "styled-components";
 
 export const StyledImageWrapper = styled.div`
   display: flex;
@@ -8,7 +13,7 @@ export const StyledImageWrapper = styled.div`
   height: 80vh;
   width: 100%;
   padding-left: 24px;
-  ${(props) => props.theme.breakpoints.down('md')} {
+  ${(props) => props.theme.breakpoints.down("md")} {
     margin-top: 16px;
     padding: 0;
     justify-content: flex-start;
@@ -24,44 +29,41 @@ export const StyledImage = styled.img`
 export const StyledContainer = styled.div`
   display: grid;
   grid-template-columns: 10% 45% 45%;
-  ${(props) => props.theme.breakpoints.down('md')} {
+  ${(props) => props.theme.breakpoints.down("md")} {
     grid-template-columns: 100%;
   }
 `;
 
 export const StyledMovieKey = styled(Typography).attrs({
-  variant: 'body1',
-  as: 'p',
-})`
-  font-weight: 500 !important;
-`;
+  variant: "body1",
+  as: "p",
+})``;
 
 export const StyledMovieValue = styled(Typography).attrs({
-  variant: 'body1',
-  as: 'p',
+  variant: "body1",
+  as: "p",
 })`
   color: ${(props) => props.theme.palette.grey[300]} !important;
-  font-size: 14px !important;
 `;
 
 export const StyledMovieTitle = styled(Typography).attrs({
-  variant: 'h4',
-  as: 'h1',
+  variant: "h4",
+  as: "h1",
 })`
   font-weight: 900 !important;
   margin-bottom: 24px !important;
 `;
 
 export const StyledDescriptionTitle = styled(Typography).attrs({
-  variant: 'h6',
-  as: 'h2',
+  variant: "h6",
+  as: "h2",
 })`
   font-weight: 500 !important;
 `;
 
 export const StyledMovieContent = styled.div`
   margin-left: 24px;
-  ${(props) => props.theme.breakpoints.down('md')} {
+  ${(props) => props.theme.breakpoints.down("md")} {
     margin: 0;
     margin-top: 24px;
   }
@@ -71,3 +73,11 @@ export const StyledBackButton = styled(Button)`
   height: 42px;
   max-width: 110px;
 `;
+
+export const StyledTableRow = styledMUI(TableRow)(({ theme }) => ({
+  "& td, & th": {
+    border: 0,
+    padding: 8,
+    paddingLeft: 0,
+  },
+}));
