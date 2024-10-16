@@ -42,10 +42,18 @@ export const createMovie = async (movie: Movie) => {
   }
 };
 
+export const deleteMovie = async (id: string) => {
+  try {
+    return await client.delete<never, Movie>(`/movies/${id}`);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export const createMovieImage = async (image: FormData) => {
   try {
     return await client.post<never, { url: string; id: string }>(
-      '/movies/upload',
+      "/movies/upload",
       image
     );
   } catch (error) {

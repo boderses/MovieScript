@@ -1,17 +1,15 @@
 import React, { useCallback, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Rating,
-  Table,
-  TableBody,
-  TableCell,
-} from "@mui/material";
+import { Box, Rating, Table, TableBody, TableCell } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {
+  ArrowBack as ArrowBackIcon,
+  DeleteForever as DeleteForeverIcon,
+  Edit as EditIcon,
+} from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import dayjs from "dayjs";
 
+import { Error } from "../../components/Error";
 import { Preloader } from "../../components/Preloader";
 import { CenterContainer } from "../../components/CenterContainer";
 import { MovieFormSchema, Position } from "../../types";
@@ -24,14 +22,20 @@ import {
   movieDetailsUpdateMovieStart,
 } from "./thunks/movieDetailsUpdateMovie";
 import { movieDetailsFetchStart } from "./thunks/movieDetailsFetch";
+import { movieDetailsDeleteMovieStart } from "./thunks/movieDetailsDeleteMovie";
 import { movieFetchSelector } from "./selectors/movieDetailsFetch";
 import { ModalMovieUpdate } from "./components/ModalMovieUpdate";
+import { ModalMovieDelete } from "./components/ModalMovieDelete";
+import { movieDeleteSelector } from "./selectors/movieDetailsDeleteMovie";
 import {
   movieUpdateCategoriesSelector,
   movieUpdateFetchDataSelector,
+  movieUpdateSelector,
 } from "./selectors/movieDetailsUpdateMovie";
 import {
+  StyledButton,
   StyledBackButton,
+  StyledEditButton,
   StyledContainer,
   StyledDescriptionTitle,
   StyledImage,
@@ -48,10 +52,12 @@ export const MovieDetails = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { open, name } = useSelector(modalSelector);
+  const { loading: createMovieLoading } = useSelector(movieUpdateSelector);
   const { categories: fetchCategories, fetchCategoriesLoading } = useSelector(
     movieUpdateCategoriesSelector
   );
   const { fetchData, fetchLoading } = useSelector(movieUpdateFetchDataSelector);
+  const { loading: deleteMovieLoading } = useSelector(movieDeleteSelector);
   const { data: movie, loading, error } = useSelector(movieFetchSelector);
   const date = dayjs(movie.releaseDate).format("MMM D, YYYY");
   const categories = (movie.categories || [])
@@ -63,6 +69,10 @@ export const MovieDetails = () => {
     if (movieId) {
       dispatch(movieDetailsBeforeUpdateMovieStart({ id: movieId }));
     }
+  };
+
+  const onClickDeleteMovie = () => {
+    dispatch(modalOpen({ name: MODAL_NAME.MOVIE_DELETE }));
   };
 
   const handleModalClose = useCallback(() => {
@@ -78,6 +88,12 @@ export const MovieDetails = () => {
     [movieId, dispatch]
   );
 
+  const handleDeleteMovie = useCallback(() => {
+    if (movieId) {
+      dispatch(movieDetailsDeleteMovieStart({ id: movieId }));
+    }
+  }, [movieId, dispatch]);
+
   useEffect(() => {
     if (movieId) {
       dispatch(movieDetailsFetchStart({ id: movieId }));
@@ -92,15 +108,36 @@ export const MovieDetails = () => {
         </CenterContainer>
       )}
       <StyledContainer>
-        <StyledBackButton
-          variant="outlined"
-          color="light"
-          onClick={() => navigate(-1)}
-          startIcon={<ArrowBackIcon />}
-        >
-          Back
-        </StyledBackButton>
-        {movie && !loading && !error && (
+        <Box>
+          <StyledBackButton
+            variant="outlined"
+            color="light"
+            onClick={() => navigate(-1)}
+            startIcon={<ArrowBackIcon />}
+          >
+            Back
+          </StyledBackButton>
+          {Object.keys(movie).length !== 0 && !error && (
+            <>
+              <StyledEditButton
+                onClick={onClickEditMovie}
+                variant="contained"
+                startIcon={<EditIcon />}
+                color="secondary"
+              >
+                Edit
+              </StyledEditButton>
+              <StyledButton
+                onClick={onClickDeleteMovie}
+                variant="contained"
+                startIcon={<DeleteForeverIcon />}
+              >
+                Delete
+              </StyledButton>
+            </>
+          )}
+        </Box>
+        {Object.keys(movie).length !== 0 && !error && (
           <>
             <StyledImageWrapper>
               <StyledImage src={movie.imagePath} alt="" />
@@ -143,25 +180,29 @@ export const MovieDetails = () => {
                   </StyledTableRow>
                 </TableBody>
               </Table>
-              <Box marginBottom="36px">
+              <Box>
                 <StyledDescriptionTitle>
                   Film description:
                 </StyledDescriptionTitle>
                 <StyledMovieValue>{movie.description}</StyledMovieValue>
               </Box>
-              <Button onClick={onClickEditMovie} variant="contained">
-                Edit Movie
-              </Button>
             </StyledMovieContent>
             <ModalMovieUpdate
               open={open && name === MODAL_NAME.MOVIE_UPDATE}
               handleClose={handleModalClose}
-              loading={loading}
+              loading={createMovieLoading}
               defaultMovieProps={fetchData}
               fetchLoading={fetchLoading}
               fetchCategoriesLoading={fetchCategoriesLoading}
               categories={fetchCategories}
               handleUpdateMovie={handleUpdateMovie}
+            />
+            <ModalMovieDelete
+              open={open && name === MODAL_NAME.MOVIE_DELETE}
+              loading={deleteMovieLoading}
+              handleDeleteMovie={handleDeleteMovie}
+              handleClose={handleModalClose}
+              title={movie.title}
             />
           </>
         )}

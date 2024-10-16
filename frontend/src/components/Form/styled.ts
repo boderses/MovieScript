@@ -1,12 +1,11 @@
 import styled from "styled-components";
-import { Box, Skeleton, styled as styledMui } from '@mui/material';
+import { Box, Skeleton, styled as styledMui } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-
 
 export const StyledForm = styled.form`
   display: flex;
-  height: 100%;
-  gap: 8px;
+  flex-grow: 1;
+  justify-content: space-between;
   flex-direction: column;
 `;
 
