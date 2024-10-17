@@ -2,16 +2,16 @@ import React, { useCallback, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 
-import { useAppDispatch } from "../../store";
-import { modalClose } from "../../store/modal/reducer/modal";
-import { MODAL_NAME } from "../../store/modal/constants/modal";
-import { modalSelector } from "../../store/modal/selectors/modal";
-import { MovieCategoryUserInput, Position, MovieFormSchema } from "../../types";
+import { useAppDispatch } from "store";
+import { modalClose } from "store/modal/reducer/modal";
+import { MODAL_NAME } from "store/modal/constants/modal";
+import { modalSelector } from "store/modal/selectors/modal";
+import { MovieCategoryUserInput, Position, MovieFormSchema } from "types";
 
-import { Preloader } from "../../components/Preloader";
-import { Error } from "../../components/Error";
-import { CenterContainer } from "../../components/CenterContainer";
-import { setQueries } from "../../utils/setQueries";
+import { Preloader } from "components/Preloader";
+import { Error } from "components/Error";
+import { CenterContainer } from "components/CenterContainer";
+import { setQueries } from "utils/setQueries";
 
 import {
   movieListCreateMovieSelector,

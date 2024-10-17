@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getQueries } from "../../../utils/getQueries";
-import { Movie, MovieQueries } from "../../../types";
+import { getQueries } from "utils/getQueries";
+import { Movie, MovieQueries } from "types";
 import * as actions from "../actions/movieListFetch";
 import { movieListFetchStart } from "../thunks/movieListFetch";
 

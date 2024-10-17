@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Modal as ModalMUI, ThemeProvider } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { getTheme } from "../../styles/theme";
+import { getTheme } from "styles/theme";
 import { StyledCloseButton, StyledContainer } from "./styled";
 
 type ModalProps = {

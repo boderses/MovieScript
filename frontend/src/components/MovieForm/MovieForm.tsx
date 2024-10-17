@@ -22,7 +22,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { Input } from "../Input";
-import { Movie, MovieCategory, MovieFormSchema } from "../../types";
+import { Movie, MovieCategory, MovieFormSchema } from "types";
 import { FormSkeleton } from "../FormSkeleton";
 import {
   StyledButton,

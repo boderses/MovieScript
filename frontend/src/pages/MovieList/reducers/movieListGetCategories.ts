@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import * as actions from "../actions/movieListGetCategories";
-import { MovieCategory } from "../../../types";
+import { MovieCategory } from "types";
 import { movieListGetCategoriesStart } from "../thunks/movieListGetCategories";
 
 export type MovieListGetCategoriesState = {
