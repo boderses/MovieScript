@@ -21,7 +21,10 @@ import {
   movieListCompareViewFetchSelector,
   movieListCompareViewSelector,
 } from "./selectors/movieListCompareView";
-import { movieListAddQuery } from "./reducers/movieListFetch";
+import {
+  movieListAddQuery,
+  movieListResetData,
+} from "./reducers/movieListFetch";
 import {
   movieListCompareViewAddMovie,
   movieListCompareViewRemoveMovie,
@@ -124,6 +127,10 @@ export const MovieList = () => {
 
   useEffect(() => {
     dispatch(movieListFetchStart());
+
+    return () => {
+      dispatch(movieListResetData());
+    };
   }, [dispatch]);
 
   useEffect(() => {
