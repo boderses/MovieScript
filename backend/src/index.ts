@@ -1,11 +1,22 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+import fileUpload from "express-fileupload";
+
+import { Context } from "./types";
 import router from "./routes";
-import dotenv from 'dotenv';
-import path from 'path';
-import fileUpload from 'express-fileupload';
+import accessTokenMiddleware from "./middlewares/accessToken.middleware";
+
+declare global {
+  namespace Express {
+    interface Request {
+      context?: Context;
+    }
+  }
+}
 
 dotenv.config();
 
@@ -22,8 +33,8 @@ app.use(
   })
 );
 
-app.use("/api", router);
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use("/api", accessTokenMiddleware, router);
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use("*", (req, res) => {
   res.status(404).json({
@@ -34,7 +45,7 @@ async function main() {
   try {
     await mongoose.connect(MONGO_URI as string);
     console.log("Connected to MongoDB");
-    
+
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
       console.log("Press CTRL + C to stop");

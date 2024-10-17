@@ -1,10 +1,10 @@
-import { Schema } from "mongoose";
+import { Schema, Types } from "mongoose";
 import { Service } from "typedi";
 import modelMixin from "../mixins/model.mixin";
-import { Movie } from "../types";
+import { Movie, MovieUpdate } from "../types";
 import { categorySchema } from "./category.model";
 
-const movieSchema = new Schema<Movie>(
+export const movieSchema = new Schema<Movie>(
   {
     _id: { type: String, required: true },
     title: { type: String, required: true },
@@ -14,6 +14,7 @@ const movieSchema = new Schema<Movie>(
     duration: { type: Number, required: true },
     grade: { type: Number, required: true },
     imagePath: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     deleted: { type: Boolean },
   },
   { timestamps: true, versionKey: false }
@@ -39,12 +40,12 @@ class MovieModel extends modelMixin<Movie>("Movie", movieSchema) {
     return await super.findById(id);
   }
 
-  async getMovie(id: string) {
-    return await this.Model.findById(id);
+  async getMovie(id: string, userId: Types.ObjectId) {
+    return await this.findMovieByParam({ _id: id, userId });
   }
 
-  async deleteMovie(id: string) {
-    const movie = await this.findById(id);
+  async deleteMovie(id: string, userId: Types.ObjectId) {
+    const movie = await this.getMovie(id, userId);
     const deletedMovie = new this.Model(movie);
 
     deletedMovie.set({ deleted: true });
@@ -53,10 +54,15 @@ class MovieModel extends modelMixin<Movie>("Movie", movieSchema) {
     return "Successfully deleted";
   }
 
-  async updateMovie(data: Partial<Movie>, id: string) {
-    const movie = await this.findById(id);
+  async updateMovie(data: {
+    movie: Partial<MovieUpdate>;
+    id: string;
+    userId: Types.ObjectId;
+  }) {
+    const { userId, id, movie: newMovieData } = data;
+    const movie = await this.getMovie(id, userId);
     const updatedMovie = new this.Model(movie);
-    updatedMovie.set(data);
+    updatedMovie.set(newMovieData);
     await updatedMovie.save();
     return updatedMovie;
   }

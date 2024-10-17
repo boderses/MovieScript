@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import styled from "styled-components";
+import { NavLink } from "react-router-dom";
 
 export const StyledHeaderWrapper = styled.div`
   position: relative;
@@ -14,6 +14,7 @@ export const StyledNav = styled.nav`
   display: flex;
   gap: 16px;
   color: ${(props) => props.theme.palette.common.white};
+  flex: 1;
 `;
 
 export const StyledNavLink = styled(NavLink)`
@@ -21,7 +22,7 @@ export const StyledNavLink = styled(NavLink)`
   color: inherit;
 
   & > span {
-    font-family: 'Montserrat', sans-serif;
+    font-family: "Montserrat", sans-serif;
     font-weight: 500;
   }
 

@@ -1,16 +1,9 @@
 import { Request, Response } from "express";
 import { Service } from "typedi";
-import fsPromises from "fs/promises";
-import { v4 as uuidv4 } from "uuid";
-import dotenv from "dotenv";
 
 import MovieService from "../services/movie.service";
 import { MovieOptionalSchema, MovieSchema } from "../validation";
 import BaseController from "./base.controller";
-
-dotenv.config();
-
-const HOST = process.env.HOST;
 
 @Service()
 class MovieController extends BaseController {
@@ -20,8 +13,13 @@ class MovieController extends BaseController {
 
   async getMovieList(request: Request, response: Response) {
     try {
-      const movieList = await this.movieService.getMovieList(request.query);
-      return this.formatSuccessResponse(response, movieList);
+      if (request.context && request.context.user) {
+        const movieList = await this.movieService.getMovieList(
+          request.query,
+          request.context.user
+        );
+        return this.formatSuccessResponse(response, movieList);
+      }
     } catch (error) {
       this.handleError(response, error);
     }
@@ -29,8 +27,13 @@ class MovieController extends BaseController {
 
   async getMovie(request: Request, response: Response) {
     try {
-      const movie = await this.movieService.getMovie(request.params.id);
-      return this.formatSuccessResponse(response, movie);
+      if (request.context && request.context.user) {
+        const movie = await this.movieService.getMovie(
+          request.params.id,
+          request.context.user._id
+        );
+        return this.formatSuccessResponse(response, movie);
+      }
     } catch (error) {
       this.handleError(response, error);
     }
@@ -39,8 +42,13 @@ class MovieController extends BaseController {
   async createMovie(request: Request, response: Response) {
     try {
       const validMovie = MovieSchema.parse(request.body);
-      const movie = await this.movieService.createMovie(validMovie);
-      return this.formatSuccessResponse(response, movie);
+      if (request.context && request.context.user) {
+        const movie = await this.movieService.createMovie(
+          validMovie,
+          request.context.user
+        );
+        return this.formatSuccessResponse(response, movie);
+      }
     } catch (error) {
       this.handleError(response, error);
     }
@@ -49,11 +57,14 @@ class MovieController extends BaseController {
   async updateMovie(request: Request, response: Response) {
     try {
       const validMovie = MovieOptionalSchema.parse(request.body);
-      const movie = await this.movieService.updateMovie(
-        validMovie,
-        request.params.id
-      );
-      return this.formatSuccessResponse(response, movie);
+      if (request.context && request.context.user) {
+        const movie = await this.movieService.updateMovie({
+          movie: validMovie,
+          id: request.params.id,
+          userId: request.context.user._id,
+        });
+        return this.formatSuccessResponse(response, movie);
+      }
     } catch (error) {
       this.handleError(response, error);
     }
@@ -61,47 +72,28 @@ class MovieController extends BaseController {
 
   async deleteMovie(request: Request, response: Response) {
     try {
-      const deletedResponse = await this.movieService.deleteMovie(
-        request.params.id
-      );
-      await this.deleteMovieImage(request.params.id);
-      return this.formatSuccessResponse(response, deletedResponse);
+      if (request.context && request.context.user) {
+        const deletedResponse = await this.movieService.deleteMovie(
+          request.params.id,
+          request.context.user._id
+        );
+        return this.formatSuccessResponse(response, deletedResponse);
+      }
     } catch (error) {
       this.handleError(response, error);
     }
   }
 
-  async deleteMovieImage(id: string) {
-    const dirPath = `${__dirname}/../public/movies/${id}`;
-    await fsPromises.rm(dirPath, { recursive: true });
-  }
-
-  async checkAndCreateDirectory(path: string) {
+  async createMovieImage(request: Request, response: Response) {
     try {
-      await fsPromises.access(path);
-    } catch (error) {
-      await fsPromises.mkdir(path);
-    }
-  }
-
-  async uploadMovieImage(request: Request, response: Response) {
-    try {
-      if (request.files?.file) {
+      if (request.files?.file && request.context && request.context.user) {
         const file = request.files.file;
         if (!Array.isArray(file)) {
-          const dirName = uuidv4();
-
-          await this.checkAndCreateDirectory(`${__dirname}/../public`);
-          await this.checkAndCreateDirectory(`${__dirname}/../public/movies`);
-
-          await fsPromises.mkdir(`${__dirname}/../public/movies/${dirName}`);
-          await file.mv(
-            `${__dirname}/../public/movies/${dirName}/${file.name}`
+          const data = await this.movieService.createMovieImage(
+            file,
+            request.context.user._id
           );
-          return this.formatSuccessResponse(response, {
-            url: `${HOST}/public/movies/${dirName}/${file.name}`,
-            id: dirName,
-          });
+          return this.formatSuccessResponse(response, data);
         }
       }
       return this.formatErrorResponse(response, "No file");
@@ -112,19 +104,15 @@ class MovieController extends BaseController {
 
   async updateMovieImage(request: Request, response: Response) {
     try {
-      if (request.files?.file) {
+      if (request.files?.file && request.context && request.context.user) {
         const file = request.files.file;
         if (!Array.isArray(file)) {
-          const dirPath = `${__dirname}/../public/movies/${request.params.id}`;
-          const dirFiles = await fsPromises.readdir(dirPath);
-          const filesPromises = dirFiles.map((file) =>
-            fsPromises.unlink(`${dirPath}/${file}`)
-          );
-          await Promise.all(filesPromises);
-          await file.mv(`${dirPath}/${file.name}`);
-          return this.formatSuccessResponse(response, {
-            url: `${HOST}/public/movies/${request.params.id}/${file.name}`,
+          const data = await this.movieService.updateMovieImage({
+            file,
+            id: request.params.id,
+            userId: request.context.user._id,
           });
+          return this.formatSuccessResponse(response, data);
         }
       }
       return this.formatErrorResponse(response, "No file");

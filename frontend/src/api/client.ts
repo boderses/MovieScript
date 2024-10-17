@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const { REACT_APP_API } = process.env;
 
@@ -18,8 +18,21 @@ client.interceptors.response.use(
     if (response.response.data?.data?.fieldErrors) {
       error = Object.values(response.response.data.data.fieldErrors)
         .flat()
-        .join(', ');
+        .join(", ");
     }
+    return Promise.reject(error);
+  }
+);
+
+client.interceptors.request.use(
+  (config) => {
+    if (config.headers === undefined) {
+      config.headers = {};
+    }
+    config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+    return config;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );
