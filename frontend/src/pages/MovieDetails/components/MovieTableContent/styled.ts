@@ -3,28 +3,27 @@ import styled from "styled-components";
 
 export const StyledMovieKey = styled(Typography).attrs({
   variant: "body1",
-  as: "p",
-})``;
+})<{ component?: React.ElementType }>`
+  margin-bottom: 0;
+  color: white;
+`;
 
 export const StyledMovieValue = styled(Typography).attrs({
   variant: "body1",
-  as: "p",
-})`
+})<{ component?: React.ElementType }>`
   color: ${(props) => props.theme.palette.grey[300]} !important;
 `;
 
 export const StyledMovieTitle = styled(Typography).attrs({
   variant: "h4",
-  as: "h1",
-})`
+})<{ component?: React.ElementType }>`
   font-weight: 900 !important;
   margin-bottom: 24px !important;
 `;
 
 export const StyledDescriptionTitle = styled(Typography).attrs({
   variant: "h6",
-  as: "h2",
-})`
+})<{ component?: React.ElementType }>`
   font-weight: 500 !important;
 `;
 

@@ -50,6 +50,12 @@ export const MovieItem = (props: MovieItemProps) => {
               e.stopPropagation();
               handleToggleCompareMovie(movieId);
             }}
+            sx={{
+              color: compareMovieIds.indexOf(movieId) > -1 ? 'green' : 'rgb(242, 140, 40)',
+              '&:hover': {
+                backgroundColor: 'lightgray'
+              },
+            }}
           >
             {compareMovieIds.indexOf(movieId) > -1 ? (
               <CheckIcon color="success" />

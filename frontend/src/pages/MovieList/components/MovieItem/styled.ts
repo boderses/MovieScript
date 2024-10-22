@@ -1,4 +1,4 @@
-import { CardContent, Card, Typography } from "@mui/material";
+import { CardContent, Card, Typography, TypographyProps } from "@mui/material";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -92,14 +92,14 @@ export const StyledCardContent = styled(CardContent)`
   position: relative;
   z-index: 1;
   display: flex;
-  align-items: end;
+  align-items: flex-end;
   height: 100%;
 `;
 
-export const StyledTitle = styled(Typography).attrs({
+export const StyledTitle = styled(Typography).attrs((props: TypographyProps) => ({
   variant: "h6",
-  as: "h2",
-})`
+  component: props.component || "h2",
+}))`
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
@@ -108,6 +108,7 @@ export const StyledTitle = styled(Typography).attrs({
   width: 80%;
   font-weight: 700 !important;
   line-height: 1.2 !important;
+  color: white;
 `;
 
 export const StyledTextData = styled.span`
