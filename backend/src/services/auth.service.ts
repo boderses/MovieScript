@@ -3,8 +3,10 @@ import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
 import { UserLogin, UserRegister, User } from "../types";
 import UserModel from "../models/user.model";
+import dotenv from 'dotenv';
 
-const { JWT_SECRET } = process.env;
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 @Service()
 class AuthService {

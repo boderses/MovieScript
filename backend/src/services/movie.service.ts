@@ -15,7 +15,7 @@ import {
 
 dotenv.config();
 
-const HOST = process.env;
+const HOST = process.env.HOST;
 
 @Service()
 class MovieService {

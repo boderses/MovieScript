@@ -1,18 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StyledMenu, StyledMenuItem } from "./styled";
+import { Tooltip } from "@mui/material";
 
 type MenuAddProps = {
+  open: boolean;
+  categoriesLength: number;
   handleOpenModalCategoryCreate: () => void;
   handleOpenModalMovieCreate: () => void;
-  anchorEl: HTMLElement | null;
-  open: boolean;
   onClose: () => void;
+  anchorEl: HTMLElement | null;
 };
 
 export const MenuAdd = (props: MenuAddProps) => {
   const {
     open,
+    categoriesLength,
     handleOpenModalCategoryCreate,
     handleOpenModalMovieCreate,
     anchorEl,
@@ -43,7 +46,19 @@ export const MenuAdd = (props: MenuAddProps) => {
         "aria-labelledby": "add-button",
       }}
     >
-      <StyledMenuItem onClick={onClickCreateMovie}>Movie</StyledMenuItem>
+      <Tooltip
+        placement="right"
+        title={categoriesLength === 0 ? "Please add at least one category" : ""}
+      >
+        <span>
+          <StyledMenuItem
+            disabled={categoriesLength === 0}
+            onClick={onClickCreateMovie}
+          >
+            Movie
+          </StyledMenuItem>
+        </span>
+      </Tooltip>
       <StyledMenuItem onClick={onClickCreateCategory}>Category</StyledMenuItem>
     </StyledMenu>
   );
