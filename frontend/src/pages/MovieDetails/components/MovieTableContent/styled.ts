@@ -3,19 +3,19 @@ import styled from "styled-components";
 
 export const StyledMovieKey = styled(Typography).attrs({
   variant: "body1",
-  component: "p",
+  as: "p",
 })``;
 
 export const StyledMovieValue = styled(Typography).attrs({
   variant: "body1",
-  component: "p",
+  as: "p",
 })`
   color: ${(props) => props.theme.palette.grey[300]} !important;
 `;
 
 export const StyledMovieTitle = styled(Typography).attrs({
   variant: "h4",
-  component: "h1",
+  as: "h1",
 })`
   font-weight: 900 !important;
   margin-bottom: 24px !important;
@@ -23,7 +23,7 @@ export const StyledMovieTitle = styled(Typography).attrs({
 
 export const StyledDescriptionTitle = styled(Typography).attrs({
   variant: "h6",
-  component: "h2",
+  as: "h2",
 })`
   font-weight: 500 !important;
 `;
