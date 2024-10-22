@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getQueries } from "utils/getQueries";
 import { Movie, MovieQueries } from "types";
 import * as actions from "../actions/movieListFetch";
 import { movieListFetchStart } from "../thunks/movieListFetch";
@@ -13,14 +12,12 @@ export type MovieListFetchState = {
   queries: MovieQueries;
 };
 
-const queries = getQueries();
-
 const initialState: MovieListFetchState = {
   data: [],
   error: null,
   loading: true,
   count: null,
-  queries,
+  queries: {},
 };
 
 const MOVIE_LIST_FETCH_SLICE_NAME = "MOVIE_LIST_FETCH_SLICE";
@@ -31,6 +28,7 @@ const movieListFetchSlice = createSlice({
   reducers: {
     movieListResetData: () => initialState,
     movieListAddQuery: actions.movieListAddQueryAction,
+    movieListSetQueries: actions.movieListSetQueriesAction,
   },
   extraReducers: (builder) => {
     builder
@@ -49,7 +47,7 @@ const movieListFetchSlice = createSlice({
   },
 });
 
-export const { movieListAddQuery, movieListResetData } =
+export const { movieListSetQueries, movieListAddQuery, movieListResetData } =
   movieListFetchSlice.actions;
 
 export default movieListFetchSlice.reducer;

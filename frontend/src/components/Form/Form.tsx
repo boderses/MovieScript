@@ -16,6 +16,7 @@ type FormProps<T extends FieldValues> = {
   hookFormData: UseFormReturn<T>;
   onCancel: () => void;
   onSubmit: (data: T) => void;
+  submitButtonText: string;
   fetchLoading?: boolean;
 };
 
@@ -27,6 +28,7 @@ export const Form = <T extends FieldValues>(props: FormProps<T>) => {
     onSubmit,
     hookFormData,
     inputsInfo,
+    submitButtonText,
   } = props;
 
   const {
@@ -73,7 +75,7 @@ export const Form = <T extends FieldValues>(props: FormProps<T>) => {
               variant="contained"
               type="submit"
             >
-              Submit
+              {submitButtonText}
             </StyledButton>
           </StyledButtonsContainer>
         </StyledForm>
