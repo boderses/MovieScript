@@ -20,17 +20,15 @@ type FormProps<T extends FieldValues> = {
   fetchLoading?: boolean;
 };
 
-export const Form = <T extends FieldValues>(props: FormProps<T>) => {
-  const {
-    loading,
-    fetchLoading,
-    onCancel,
-    onSubmit,
-    hookFormData,
-    inputsInfo,
-    submitButtonText,
-  } = props;
-
+export const Form = <T extends FieldValues>({
+  loading,
+  fetchLoading = false,
+  onCancel,
+  onSubmit,
+  hookFormData,
+  inputsInfo,
+  submitButtonText,
+}: FormProps<T>) => {
   const {
     register,
     handleSubmit,
@@ -42,21 +40,19 @@ export const Form = <T extends FieldValues>(props: FormProps<T>) => {
 
   return (
     <>
-      {fetchLoading && <FormSkeleton inputsCount={inputsInfo.length} />}
-      {!fetchLoading && (
+      {fetchLoading ? (
+        <FormSkeleton inputsCount={inputsInfo.length} />
+      ) : (
         <StyledForm onSubmit={handleSubmit(onSubmit)}>
-          {inputsInfo.map((input) => {
-            const name = input.name as unknown as Path<T>;
-            return (
-              <Input
-                key={name}
-                disabled={loading}
-                inputOptions={register(name)}
-                error={errors[name]?.message as string | undefined}
-                label={input.label}
-              />
-            );
-          })}
+          {inputsInfo.map(({ label, name }) => (
+            <Input
+              key={name as string}
+              disabled={loading}
+              inputOptions={register(name)}
+              error={errors[name]?.message as string | undefined}
+              label={label}
+            />
+          ))}
           <StyledButtonsContainer
             display="flex"
             gap="4px"
@@ -82,8 +78,4 @@ export const Form = <T extends FieldValues>(props: FormProps<T>) => {
       )}
     </>
   );
-};
-
-Form.defaultProps = {
-  fetchLoading: false,
 };

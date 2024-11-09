@@ -18,33 +18,38 @@ type MovieTableContentProps = {
   description: string;
 };
 
-export const MovieTableContent = (props: MovieTableContentProps) => {
-  const { date, categories, title, duration, grade, description } = props;
-
+export const MovieTableContent = ({
+  date,
+  categories,
+  title,
+  duration,
+  grade,
+  description,
+}: MovieTableContentProps) => {
   return (
     <StyledMovieContent>
-      <StyledMovieTitle component="h1" as="h1">{title}</StyledMovieTitle>
+      <StyledMovieTitle component="h1">{title}</StyledMovieTitle>
       <Table sx={{ maxWidth: 600, marginBottom: "32px" }}>
         <TableBody>
           <StyledTableRow>
             <TableCell>
-              <StyledMovieKey component="p" as="h1">Release date:</StyledMovieKey>
+              <StyledMovieKey>Release date:</StyledMovieKey>
             </TableCell>
             <TableCell>
-              <StyledMovieValue component="p" as="p">{date}</StyledMovieValue>
-            </TableCell>
-          </StyledTableRow>
-          <StyledTableRow>
-            <TableCell>
-              <StyledMovieKey component="p" as="h1">Duration:</StyledMovieKey>
-            </TableCell>
-            <TableCell>
-              <StyledMovieValue component="p" as="p">{duration} min.</StyledMovieValue>
+              <StyledMovieValue>{date}</StyledMovieValue>
             </TableCell>
           </StyledTableRow>
           <StyledTableRow>
             <TableCell>
-              <StyledMovieKey component="p" as="h1">Grade:</StyledMovieKey>
+              <StyledMovieKey>Duration:</StyledMovieKey>
+            </TableCell>
+            <TableCell>
+              <StyledMovieValue>{duration} min.</StyledMovieValue>
+            </TableCell>
+          </StyledTableRow>
+          <StyledTableRow>
+            <TableCell>
+              <StyledMovieKey>Grade:</StyledMovieKey>
             </TableCell>
             <TableCell>
               <Rating value={grade} precision={0.5} readOnly />
@@ -52,17 +57,17 @@ export const MovieTableContent = (props: MovieTableContentProps) => {
           </StyledTableRow>
           <StyledTableRow>
             <TableCell>
-              <StyledMovieKey component="p" as="h1">Categories:</StyledMovieKey>
+              <StyledMovieKey>Categories:</StyledMovieKey>
             </TableCell>
             <TableCell>
-              <StyledMovieValue component="p" as="p">{categories}</StyledMovieValue>
+              <StyledMovieValue>{categories}</StyledMovieValue>
             </TableCell>
           </StyledTableRow>
         </TableBody>
       </Table>
       <Box>
-        <StyledDescriptionTitle component="h2" as="h2">Film description:</StyledDescriptionTitle>
-        <StyledMovieValue component="p" as="p">{description}</StyledMovieValue>
+        <StyledDescriptionTitle>Film description:</StyledDescriptionTitle>
+        <StyledMovieValue>{description}</StyledMovieValue>
       </Box>
     </StyledMovieContent>
   );

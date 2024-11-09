@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { StyledMenu, StyledMenuItem } from "./styled";
 import { Tooltip } from "@mui/material";
 
@@ -12,16 +11,14 @@ type MenuAddProps = {
   anchorEl: HTMLElement | null;
 };
 
-export const MenuAdd = (props: MenuAddProps) => {
-  const {
-    open,
-    categoriesLength,
-    handleOpenModalCategoryCreate,
-    handleOpenModalMovieCreate,
-    anchorEl,
-    onClose,
-  } = props;
-
+export const MenuAdd = ({
+  open,
+  categoriesLength,
+  handleOpenModalCategoryCreate,
+  handleOpenModalMovieCreate,
+  anchorEl = null, // Значення за замовчуванням
+  onClose,
+}: MenuAddProps) => {
   const onClickCreateCategory = () => {
     handleOpenModalCategoryCreate();
     onClose();
@@ -62,14 +59,4 @@ export const MenuAdd = (props: MenuAddProps) => {
       <StyledMenuItem onClick={onClickCreateCategory}>Category</StyledMenuItem>
     </StyledMenu>
   );
-};
-
-MenuAdd.defaultProps = {
-  anchorEl: null,
-};
-
-MenuAdd.propTypes = {
-  anchorEl: PropTypes.instanceOf(Element),
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
 };

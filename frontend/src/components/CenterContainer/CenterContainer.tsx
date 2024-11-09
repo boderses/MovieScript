@@ -1,24 +1,19 @@
-import React, { ReactNode } from 'react';
-import { Position } from 'types';
-import { StyledCenterContainer } from './styled';
-
-const defaultProps = {
-  position: Position.absolute,
-};
+import React, { ReactNode } from "react";
+import { Position } from "types";
+import { StyledCenterContainer } from "./styled";
 
 type CenterContainerProps = {
   children: ReactNode;
   position?: Position;
-} & typeof defaultProps;
+};
 
-export const CenterContainer = (props: CenterContainerProps) => {
-  const { children, position } = props;
-
+export const CenterContainer = ({
+  children,
+  position = Position.absolute,
+}: CenterContainerProps) => {
   return (
-    <StyledCenterContainer position={position}>
+    <StyledCenterContainer $position={position}>
       {children}
     </StyledCenterContainer>
   );
 };
-
-CenterContainer.defaultProps = defaultProps;

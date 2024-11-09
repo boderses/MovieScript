@@ -43,28 +43,25 @@ type MovieFormProps = {
   defaultMovieProps?: Movie | Record<string, never>;
 };
 
-export const MovieForm = (props: MovieFormProps) => {
-  const {
-    loading,
-    fetchLoading,
-    fetchCategoriesLoading,
-    defaultMovieProps,
-    categories,
-    onCancel,
-    submitButtonText,
-    onSubmit,
-    schema,
-  } = props;
-
-  const [posterName, setPosterName] = useState<string | undefined>();
+export const MovieForm = ({
+  loading,
+  fetchLoading = false,
+  fetchCategoriesLoading,
+  defaultMovieProps,
+  categories,
+  onCancel,
+  submitButtonText,
+  onSubmit,
+  schema,
+}: MovieFormProps) => {
+  const [posterName, setPosterName] = useState<string | null>(null);
 
   const defaultValues = useMemo(
     () => ({
       title: defaultMovieProps?.title,
       description: defaultMovieProps?.description,
-      categories: defaultMovieProps?.categories?.map(
-        (category) => category.name
-      ),
+      categories:
+        defaultMovieProps?.categories?.map((category) => category.name) || [],
       duration: defaultMovieProps?.duration,
       releaseDate: defaultMovieProps?.releaseDate,
       grade: defaultMovieProps?.grade,
@@ -89,13 +86,14 @@ export const MovieForm = (props: MovieFormProps) => {
       defaultMovieProps?.imagePath &&
       defaultMovieProps.imagePath.split("/").pop();
     reset(defaultValues);
-    setPosterName(imagePath);
+    setPosterName(imagePath || null);
   }, [defaultValues, defaultMovieProps?.imagePath, reset]);
 
   return (
     <>
-      {fetchLoading && <FormSkeleton inputsCount={7} />}
-      {!fetchLoading && (
+      {fetchLoading ? (
+        <FormSkeleton inputsCount={7} />
+      ) : (
         <StyledForm onSubmit={handleSubmit(onSubmit)}>
           <Input
             disabled={loading}
@@ -104,7 +102,7 @@ export const MovieForm = (props: MovieFormProps) => {
             label="Title"
           />
           <Input
-            multiline={true}
+            multiline
             rows={3}
             disabled={loading}
             inputOptions={register("description")}
@@ -151,101 +149,81 @@ export const MovieForm = (props: MovieFormProps) => {
           <Controller
             name="categories"
             control={control}
-            render={({ field }) => {
-              const value = field.value || [];
-              const error = errors["categories"]?.message;
-              return (
-                <FormControl>
-                  <InputLabel id="select-categories">Categories</InputLabel>
-                  <Select
-                    labelId="select-categories"
-                    disabled={loading}
-                    color="secondary"
-                    error={Boolean(error)}
-                    multiple
-                    input={
-                      <OutlinedInput color="secondary" label="Categories" />
-                    }
-                    MenuProps={{
-                      PaperProps: {
-                        sx: {
-                          maxHeight: "200px",
-                        },
-                      },
-                    }}
-                    renderValue={(selected: string[]) => selected.join(", ")}
-                    onChange={field.onChange}
-                    value={value}
-                  >
-                    {fetchCategoriesLoading &&
-                      Array.from(Array(3), (_, index) => (
+            render={({ field }) => (
+              <FormControl>
+                <InputLabel id="select-categories">Categories</InputLabel>
+                <Select
+                  labelId="select-categories"
+                  disabled={loading}
+                  color="secondary"
+                  multiple
+                  input={<OutlinedInput color="secondary" label="Categories" />}
+                  MenuProps={{
+                    PaperProps: { sx: { maxHeight: "200px" } },
+                  }}
+                  renderValue={(selected: string[]) => selected.join(", ")}
+                  onChange={field.onChange}
+                  value={field.value || []}
+                >
+                  {fetchCategoriesLoading
+                    ? Array.from(Array(3), (_, index) => (
                         <MenuItem key={index}>
                           <StyledSkeleton />
                         </MenuItem>
-                      ))}
-                    {!fetchCategoriesLoading &&
-                      categories.map((category) => (
-                        <MenuItem
-                          color="secondary"
-                          key={category._id}
-                          value={category.name}
-                        >
+                      ))
+                    : categories.map((category) => (
+                        <MenuItem key={category._id} value={category.name}>
                           <Checkbox
                             color="secondary"
-                            checked={value.indexOf(category.name) > -1}
+                            checked={field.value.indexOf(category.name) > -1}
                           />
                           <ListItemText primary={category.name} />
                         </MenuItem>
                       ))}
-                  </Select>
+                </Select>
+                {errors["categories"] && (
                   <FormHelperText sx={{ color: "error.main" }}>
-                    {error}
+                    {errors["categories"]?.message}
                   </FormHelperText>
-                </FormControl>
-              );
-            }}
+                )}
+              </FormControl>
+            )}
           />
           <Controller
             name="releaseDate"
             control={control}
-            render={({ field }) => {
-              const value = field.value || null;
-              const error = errors["releaseDate"]?.message;
-              return (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DesktopDatePicker
-                    label="Release date"
-                    inputFormat="MM/DD/YYYY"
-                    disabled={loading}
-                    openTo="year"
-                    views={["year", "month", "day"]}
-                    PopperProps={{
-                      sx: {
-                        "& .Mui-selected": {
-                          bgcolor: "#e05326 !important",
-                        },
-                        "& .Mui-selected:hover": {
-                          bgcolor: "#d14314 !important",
-                        },
+            render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Release date"
+                  inputFormat="MM/DD/YYYY"
+                  disabled={loading}
+                  openTo="year"
+                  views={["year", "month", "day"]}
+                  PopperProps={{
+                    sx: {
+                      "& .Mui-selected": { bgcolor: "#e05326 !important" },
+                      "& .Mui-selected:hover": {
+                        bgcolor: "#d14314 !important",
                       },
-                    }}
-                    InputProps={{
-                      sx: { "& .MuiSvgIcon-root": { color: "secondary.main" } },
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        color="secondary"
-                        {...params}
-                        error={Boolean(error)}
-                        helperText={error}
-                      />
-                    )}
-                    {...field}
-                    value={value}
-                  />
-                </LocalizationProvider>
-              );
-            }}
+                    },
+                  }}
+                  InputProps={{
+                    sx: { "& .MuiSvgIcon-root": { color: "secondary.main" } },
+                  }}
+                  {...field}
+                  value={field.value || null}
+                  renderInput={(params) => (
+                    <TextField
+                      color="secondary"
+                      {...params}
+                      error={Boolean(errors["releaseDate"])}
+                      helperText={errors["releaseDate"]?.message}
+                    />
+                  )}
+                />
+              </LocalizationProvider>
+            )}
           />
           <FormControl>
             <Button
@@ -261,9 +239,8 @@ export const MovieForm = (props: MovieFormProps) => {
                 accept="image/*"
                 type="file"
                 {...register("imagePath", {
-                  onChange: (event) => {
-                    setPosterName(event.target.files[0].name);
-                  },
+                  onChange: (event) =>
+                    setPosterName(event.target.files[0]?.name || null),
                 })}
               />
             </Button>
@@ -300,8 +277,4 @@ export const MovieForm = (props: MovieFormProps) => {
       )}
     </>
   );
-};
-
-MovieForm.defaultProps = {
-  fetchLoading: false,
 };

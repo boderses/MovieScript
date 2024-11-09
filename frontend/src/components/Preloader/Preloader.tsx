@@ -1,24 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import preloader from 'assets/svg/preloader.svg';
+import React from "react";
+import preloader from "assets/svg/preloader.svg";
 
 type PreloaderProps = {
   width?: number;
   height?: number;
 };
 
-export const Preloader = (props: PreloaderProps) => {
-  const { width, height } = props;
-
+export const Preloader = ({ width = 64, height = 64 }: PreloaderProps) => {
   return <img src={preloader} alt="Preloader" width={width} height={height} />;
-};
-
-Preloader.defaultProps = {
-  width: 64,
-  height: 64,
-};
-
-Preloader.propTypes = {
-  width: PropTypes.number,
-  height: PropTypes.number,
 };

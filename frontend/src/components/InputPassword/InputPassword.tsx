@@ -4,10 +4,6 @@ import { InputAdornment, IconButton } from "@mui/material";
 import { RefCallBack } from "react-hook-form";
 import { Input } from "components/Input/Input";
 
-const defaultProps = {
-  label: "Password",
-};
-
 type InputPasswordProps = {
   disabled: boolean;
   size: "small" | "medium";
@@ -23,10 +19,15 @@ type InputPasswordProps = {
   };
   error?: string;
   label?: string;
-} & typeof defaultProps;
+};
 
-export const InputPassword = (props: InputPasswordProps) => {
-  const { disabled, size, inputOptions, error, label } = props;
+export const InputPassword = ({
+  disabled,
+  size,
+  inputOptions,
+  error,
+  label = "Password",
+}: InputPasswordProps) => {
   const [togglePassword, setTogglePassword] = useState(false);
   const handlePasswordHide = () => {
     setTogglePassword((prevState) => !prevState);
@@ -52,5 +53,3 @@ export const InputPassword = (props: InputPasswordProps) => {
     />
   );
 };
-
-InputPassword.defaultProps = defaultProps;

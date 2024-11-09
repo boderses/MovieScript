@@ -2,14 +2,6 @@ import React, { ChangeEvent } from "react";
 import { OutlinedInputProps, TextField } from "@mui/material";
 import { RefCallBack } from "react-hook-form";
 
-const defaultProps = {
-  error: "",
-  type: "text",
-  size: "small",
-  disabled: false,
-  multiline: false,
-};
-
 type InputProps = {
   inputOptions: {
     name: string;
@@ -29,21 +21,19 @@ type InputProps = {
   error?: string;
   multiline?: boolean;
   rows?: number;
-} & typeof defaultProps;
+};
 
-export const Input = (props: InputProps) => {
-  const {
-    error,
-    inputOptions,
-    label,
-    type,
-    disabled,
-    multiline,
-    rows,
-    inputProps,
-    size,
-  } = props;
-
+export const Input = ({
+  error = "",
+  inputOptions,
+  label,
+  type = "text",
+  disabled = false,
+  multiline = false,
+  rows,
+  inputProps,
+  size = "small",
+}: InputProps) => {
   return (
     <TextField
       color="secondary"
@@ -62,5 +52,3 @@ export const Input = (props: InputProps) => {
     />
   );
 };
-
-Input.defaultProps = defaultProps;
