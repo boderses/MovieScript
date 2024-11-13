@@ -13,5 +13,9 @@ categoryRouter.post(
   '/',
   categoryController.createCategory.bind(categoryController)
 );
+categoryRouter.delete(
+  '/:categoryId',
+  categoryController.deleteCategory.bind(categoryController)
+);
 
 export default categoryRouter;

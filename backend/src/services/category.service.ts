@@ -27,6 +27,24 @@ class CategoryService {
   async getCategories(user: Document<unknown, any, User> & User) {
     return await this.categoryModel.model.find({ userId: user._id });
   }
+
+  async deleteCategory(
+    categoryId: string,
+    user: Document<unknown, any, User> & User
+  ) {
+    const category = await this.categoryModel.model.findOne({
+      _id: categoryId,
+      userId: user._id,
+    });
+
+    if (!category) {
+      throw new Error(
+        "Category not found or you are not authorized to delete this category"
+      );
+    }
+    await this.categoryModel.model.deleteOne({ _id: categoryId });
+    return true;
+  }
 }
 
 export default CategoryService;

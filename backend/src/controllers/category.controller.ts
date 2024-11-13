@@ -36,6 +36,26 @@ class CategoryController extends BaseController {
       this.handleError(response, error);
     }
   }
+  async deleteCategory(request: Request, response: Response) {
+    try {
+      const { categoryId } = request.params;
+      if (request.context && request.context.user) {
+        const result = await this.categoryService.deleteCategory(
+          categoryId,
+          request.context.user
+        );
+        if (result) {
+          return this.formatSuccessResponse(response, {
+            message: "Category deleted successfully",
+          });
+        } else {
+          return this.formatErrorResponse(response, "Category not found");
+        }
+      }
+    } catch (error) {
+      this.handleError(response, error);
+    }
+  }
 }
 
 export default CategoryController;

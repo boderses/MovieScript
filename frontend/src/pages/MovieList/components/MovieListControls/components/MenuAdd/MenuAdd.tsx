@@ -16,7 +16,7 @@ export const MenuAdd = ({
   categoriesLength,
   handleOpenModalCategoryCreate,
   handleOpenModalMovieCreate,
-  anchorEl = null, // Значення за замовчуванням
+  anchorEl = null,
   onClose,
 }: MenuAddProps) => {
   const onClickCreateCategory = () => {

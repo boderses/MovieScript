@@ -24,6 +24,7 @@ import {
   ArrowDownward as ArrowDownwardIcon,
   Compare as CompareIcon,
   Add as AddIcon,
+  Delete as DeleteIcon,
 } from "@mui/icons-material";
 import debounce from "lodash.debounce";
 
@@ -39,6 +40,7 @@ import { MODAL_NAME } from "store/modal/constants/modal";
 import { MovieQueries, SortMoviesOptions } from "types";
 import { setQueries } from "utils/setQueries";
 import { movieListGetCategoriesSelector } from "../../selectors/movieListGetCategories";
+import { deleteCategoryStart } from "../../thunks/movieListDeleteCategories";
 import { movieListGetCategoriesStart } from "../../thunks/movieListGetCategories";
 import { movieListFetchStart } from "../../thunks/movieListFetch";
 import { movieListBeforeCreateMovieStart } from "../../thunks/movieListCreateMovie";
@@ -166,6 +168,11 @@ export const MovieListControls = (props: MovieListControlsProps) => {
     getMovieList(query);
   };
 
+  const handleDeleteCategory = async (categoryId: string) => {
+    await dispatch(deleteCategoryStart(categoryId));
+    await dispatch(movieListGetCategoriesStart());
+  };
+
   useEffect(() => {
     dispatch(movieListGetCategoriesStart());
   }, [dispatch]);
@@ -233,9 +240,22 @@ export const MovieListControls = (props: MovieListControlsProps) => {
                   color="secondary"
                   key={category._id}
                   value={category.name}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
                   <StyledCheckbox disableRipple={true} checked={isChecked} />
                   <ListItemText primary={category.name} />
+                  <IconButton
+                    size="small"
+                    color="error"
+                    onClick={() => handleDeleteCategory(category._id)}
+                    sx={{ marginLeft: "auto" }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </StyledMenuItem>
               );
             })}

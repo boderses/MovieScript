@@ -1,9 +1,9 @@
-import { MovieCategory, MovieCategoryUserInput } from '../types';
-import client from './client';
+import { MovieCategory, MovieCategoryUserInput } from "../types";
+import client from "./client";
 
 export const getCategories = async () => {
   try {
-    return await client.get<never, MovieCategory[]>('/categories');
+    return await client.get<never, MovieCategory[]>("/categories");
   } catch (error) {
     return Promise.reject(error);
   }
@@ -11,7 +11,15 @@ export const getCategories = async () => {
 
 export const createCategory = async (category: MovieCategoryUserInput) => {
   try {
-    return await client.post<never, MovieCategory>('/categories', category);
+    return await client.post<never, MovieCategory>("/categories", category);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const deleteCategory = async (categoryId: string) => {
+  try {
+    return await client.delete<never, void>(`/categories/${categoryId}`);
   } catch (error) {
     return Promise.reject(error);
   }
