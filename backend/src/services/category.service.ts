@@ -1,11 +1,15 @@
 import { Document } from "mongoose";
 import { Service } from "typedi";
 import CategoryModel from "../models/category.model";
+import MovieModel from "../models/movie.model";
 import { CategoryUserInput, User } from "../types";
 
 @Service()
 class CategoryService {
-  constructor(private categoryModel: CategoryModel) {}
+  constructor(
+    private categoryModel: CategoryModel,
+    private movieModel: MovieModel
+  ) {}
 
   async createCategory(
     data: CategoryUserInput,
@@ -42,7 +46,30 @@ class CategoryService {
         "Category not found or you are not authorized to delete this category"
       );
     }
+
     await this.categoryModel.model.deleteOne({ _id: categoryId });
+    return true;
+  }
+
+  async deleteCategoryWithMovies(
+    categoryId: string,
+    user: Document<unknown, any, User> & User
+  ) {
+    const category = await this.categoryModel.model.findOne({
+      _id: categoryId,
+      userId: user._id,
+    });
+
+    if (!category) {
+      throw new Error(
+        "Category not found or you are not authorized to delete this category"
+      );
+    }
+
+    await this.movieModel.model.deleteMany({ "categories._id": categoryId });
+
+    await this.categoryModel.model.deleteOne({ _id: categoryId });
+
     return true;
   }
 }

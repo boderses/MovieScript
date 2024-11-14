@@ -40,13 +40,13 @@ class CategoryController extends BaseController {
     try {
       const { categoryId } = request.params;
       if (request.context && request.context.user) {
-        const result = await this.categoryService.deleteCategory(
+        const result = await this.categoryService.deleteCategoryWithMovies(
           categoryId,
           request.context.user
         );
         if (result) {
           return this.formatSuccessResponse(response, {
-            message: "Category deleted successfully",
+            message: "Category and related movies deleted successfully",
           });
         } else {
           return this.formatErrorResponse(response, "Category not found");
