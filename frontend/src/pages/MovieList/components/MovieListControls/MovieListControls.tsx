@@ -47,6 +47,7 @@ import { movieListBeforeCreateMovieStart } from "../../thunks/movieListCreateMov
 import { movieListCompareViewGetMoviesStart } from "../../thunks/movieListCompareView";
 import { movieListCompareViewSelector } from "../../selectors/movieListCompareView";
 import { movieListAddQuery } from "../../reducers/movieListFetch";
+import { ConfirmationModal } from "../ModalCategoryDeleteConfirmation";
 
 import { MenuAdd } from "./components/MenuAdd";
 import { CategoriesSkeleton } from "./components/CategoriesSkeleton";
@@ -64,6 +65,27 @@ export const MovieListControls = (props: MovieListControlsProps) => {
     error,
   } = useSelector(movieListGetCategoriesSelector);
   const dispatch = useAppDispatch();
+
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+
+  const handleOpenConfirmDelete = (categoryId: string) => {
+    setCategoryToDelete(categoryId);
+    setOpenConfirmDelete(true);
+  };
+
+  const handleCloseConfirmDelete = () => {
+    setOpenConfirmDelete(false);
+    setCategoryToDelete(null);
+  };
+
+  const handleConfirmDeleteCategory = async () => {
+    if (categoryToDelete) {
+      await dispatch(deleteCategoryStart(categoryToDelete));
+      await dispatch(movieListGetCategoriesStart());
+    }
+    handleCloseConfirmDelete();
+  };
 
   const removeLimitQuery = () => {
     const query = { name: "limit", value: null };
@@ -168,11 +190,6 @@ export const MovieListControls = (props: MovieListControlsProps) => {
     getMovieList(query);
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
-    await dispatch(deleteCategoryStart(categoryId));
-    await dispatch(movieListGetCategoriesStart());
-  };
-
   useEffect(() => {
     dispatch(movieListGetCategoriesStart());
   }, [dispatch]);
@@ -251,7 +268,7 @@ export const MovieListControls = (props: MovieListControlsProps) => {
                   <IconButton
                     size="small"
                     color="error"
-                    onClick={() => handleDeleteCategory(category._id)}
+                    onClick={() => handleOpenConfirmDelete(category._id)}
                     sx={{ marginLeft: "auto" }}
                   >
                     <DeleteIcon />
@@ -312,6 +329,13 @@ export const MovieListControls = (props: MovieListControlsProps) => {
         anchorEl={anchorElAddMenu}
         open={openAddMenu}
         onClose={handleCloseAddMenu}
+      />
+      {}
+      <ConfirmationModal
+        open={openConfirmDelete}
+        onClose={handleCloseConfirmDelete}
+        onConfirm={handleConfirmDeleteCategory}
+        categoryName={categoryToDelete ? categories.find(category => category._id === categoryToDelete)?.name || "" : ""}
       />
     </Box>
   );
