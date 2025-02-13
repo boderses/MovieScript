@@ -3,7 +3,7 @@ import axios from "axios";
 const { REACT_APP_API } = process.env;
 
 const client = axios.create({
-  baseURL: REACT_APP_API,
+  baseURL: REACT_APP_API || "https://moviescript-kwpo.onrender.com/api",
 });
 
 client.interceptors.response.use(
