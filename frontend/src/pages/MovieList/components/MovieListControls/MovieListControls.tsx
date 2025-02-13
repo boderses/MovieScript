@@ -83,6 +83,7 @@ export const MovieListControls = (props: MovieListControlsProps) => {
     if (categoryToDelete) {
       await dispatch(deleteCategoryStart(categoryToDelete));
       await dispatch(movieListGetCategoriesStart());
+      await dispatch(movieListFetchStart());
     }
     handleCloseConfirmDelete();
   };
