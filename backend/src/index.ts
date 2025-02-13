@@ -20,7 +20,8 @@ declare global {
 
 dotenv.config();
 
-const { PORT, MONGO_URI } = process.env;
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
 
 const app = express();
 
@@ -47,7 +48,7 @@ async function main() {
     console.log("Connected to MongoDB");
 
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Server is running on port ${PORT}`);
       console.log("Press CTRL + C to stop");
     });
   } catch (error) {
