@@ -1,14 +1,17 @@
 {
   "files": {
     "main.css": "/MovieScript/static/css/main.1aa1b982.css",
-    "main.js": "/MovieScript/static/js/main.71a05111.js",
+    "main.js": "/MovieScript/static/js/main.5c816c33.js",
+    "static/js/220.97fa07c6.chunk.js": "/MovieScript/static/js/220.97fa07c6.chunk.js",
+    "static/media/movie-trailer.webm": "/MovieScript/static/media/movie-trailer.84489057ce9094653854.webm",
     "index.html": "/MovieScript/index.html",
     "static/media/preloader.svg": "/MovieScript/static/media/preloader.cd30c49631dc7ab94bed3d62283e7753.svg",
     "main.1aa1b982.css.map": "/MovieScript/static/css/main.1aa1b982.css.map",
-    "main.71a05111.js.map": "/MovieScript/static/js/main.71a05111.js.map"
+    "main.5c816c33.js.map": "/MovieScript/static/js/main.5c816c33.js.map",
+    "220.97fa07c6.chunk.js.map": "/MovieScript/static/js/220.97fa07c6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.1aa1b982.css",
-    "static/js/main.71a05111.js"
+    "static/js/main.5c816c33.js"
   ]
 }
