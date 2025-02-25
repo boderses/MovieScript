@@ -1,8 +1,9 @@
-import { Schema, Types } from "mongoose";
+import { Schema, Document, Model, Types } from "mongoose";
 import { Service } from "typedi";
 import modelMixin from "../mixins/model.mixin";
 import { Movie, MovieUpdate } from "../types";
 import { categorySchema } from "./category.model";
+import { gfs } from "../config/db";
 
 export const movieSchema = new Schema<Movie>(
   {
@@ -42,6 +43,21 @@ class MovieModel extends modelMixin<Movie>("Movie", movieSchema) {
 
   async getMovie(id: string, userId: Types.ObjectId) {
     return await this.findMovieByParam({ _id: id, userId });
+  }
+
+  async getMovieFile(id: string, userId: Types.ObjectId) {
+    if (!gfs) {
+      throw new Error("GridFSBucket not initialized");
+    }
+
+    const movie = await this.getMovie(id, userId);
+    if (!movie) {
+      throw new Error("Movie not found");
+    }
+
+    return gfs
+      .find({ "metadata.userId": userId, "metadata.dirName": movie._id })
+      .toArray();
   }
 
   async deleteMovie(id: string, userId: Types.ObjectId) {

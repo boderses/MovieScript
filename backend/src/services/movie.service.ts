@@ -1,17 +1,12 @@
+import mongoose, { Types, Document } from "mongoose";
 import dotenv from "dotenv";
-import fileUpload from "express-fileupload";
-import fsPromises from "fs/promises";
-import { Document, Types } from "mongoose";
 import { Service } from "typedi";
 import { v4 as uuidv4 } from "uuid";
+import { GridFSBucket, GridFSFile } from "mongodb";
 import MovieModel from "../models/movie.model";
-import {
-  MovieUserInput,
-  Movie,
-  MoviesQuery,
-  MovieUpdate,
-  User,
-} from "../types";
+import { MovieUserInput, Movie, MoviesQuery, MovieUpdate, User } from "../types";
+import { gfs } from "../config/db";
+import { PassThrough } from "stream";
 
 dotenv.config();
 
@@ -20,6 +15,26 @@ const HOST = process.env.HOST;
 @Service()
 class MovieService {
   constructor(private movieModel: MovieModel) {}
+
+  async uploadFileToGridFS(file: Express.Multer.File, userId: Types.ObjectId) {
+    const dirName = uuidv4();
+
+    if (!gfs) {
+      throw new Error('GridFSBucket not initialized');
+    }
+
+    const writeStream = gfs.openUploadStream(file.originalname, {
+      metadata: { userId, dirName },
+    });
+
+    const bufferStream = new PassThrough();
+    bufferStream.end(file.buffer);
+    bufferStream.pipe(writeStream);
+
+    const fileUrl = `${HOST}/public/movies/${userId}/${dirName}/${file.originalname}`;
+
+    return { fileUrl, id: dirName };
+  }
 
   async createMovie(
     data: MovieUserInput,
@@ -73,11 +88,7 @@ class MovieService {
   async getMovie(id: string, userId: Types.ObjectId) {
     const movie = await this.movieModel.getMovie(id, userId);
 
-    if (!movie) {
-      throw new Error("Invalid id");
-    }
-
-    if (movie.deleted) {
+    if (!movie || movie.deleted) {
       throw new Error("Invalid id");
     }
 
@@ -93,8 +104,25 @@ class MovieService {
   }
 
   async deleteMovieImage(id: string, userId: Types.ObjectId) {
-    const dirPath = `${__dirname}/../public/movies/${userId}/${id}`;
-    await fsPromises.rm(dirPath, { recursive: true });
+    const movieFile = await this.movieModel.getMovieFile(id, userId);
+
+    if (movieFile && Array.isArray(movieFile)) {
+      const file = movieFile[0] as GridFSFile;
+      if (file && gfs && file._id) {
+        await gfs.delete(new mongoose.Types.ObjectId(file._id));
+      } else {
+        throw new Error('File _id is missing or GridFS not initialized');
+      }
+    } else if (movieFile && !Array.isArray(movieFile)) {
+      const file = movieFile as GridFSFile;
+      if (file && gfs && file._id) {
+        await gfs.delete(new mongoose.Types.ObjectId(file._id));
+      } else {
+        throw new Error('File _id is missing or GridFS not initialized');
+      }
+    } else {
+      throw new Error('No file found');
+    }
   }
 
   async deleteMovie(id: string, userId: Types.ObjectId) {
@@ -102,50 +130,16 @@ class MovieService {
     return await this.movieModel.deleteMovie(id, userId);
   }
 
-  async checkCreateDirectory(path: string) {
-    try {
-      await fsPromises.access(path);
-    } catch (error) {
-      await fsPromises.mkdir(path);
-    }
-  }
-
-  async createMovieImage(
-    file: fileUpload.UploadedFile,
-    userId: Types.ObjectId
-  ) {
-    const dirName = uuidv4();
-
-    await this.checkCreateDirectory(`${__dirname}/../public`);
-    await this.checkCreateDirectory(`${__dirname}/../public/movies`);
-    await this.checkCreateDirectory(`${__dirname}/../public/movies/${userId}`);
-
-    await fsPromises.mkdir(
-      `${__dirname}/../public/movies/${userId}/${dirName}`
-    );
-    await file.mv(
-      `${__dirname}/../public/movies/${userId}/${dirName}/${file.name}`
-    );
-    return {
-      url: `${HOST}/public/movies/${userId}/${dirName}/${file.name}`,
-      id: dirName,
-    };
-  }
-
   async updateMovieImage(data: {
-    file: fileUpload.UploadedFile;
+    file: Express.Multer.File;
     id: string;
     userId: Types.ObjectId;
   }) {
     const { file, userId, id } = data;
-    const dirPath = `${__dirname}/../public/movies/${userId}/${id}`;
-    const dirFiles = await fsPromises.readdir(dirPath);
-    const filesPromises = dirFiles.map((fileName) =>
-      fsPromises.unlink(`${dirPath}/${fileName}`)
-    );
-    await Promise.all(filesPromises);
-    await file.mv(`${dirPath}/${file.name}`);
-    return { url: `${HOST}/public/movies/${userId}/${id}/${file.name}` };
+
+    await this.deleteMovieImage(id, userId);
+
+    return await this.uploadFileToGridFS(file, userId);
   }
 }
 
