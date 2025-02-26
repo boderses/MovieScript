@@ -1,12 +1,12 @@
-import mongoose, { Types, Document } from "mongoose";
-import dotenv from "dotenv";
 import { Service } from "typedi";
+import { GridFSBucket } from "mongodb";
+import { gfs } from "../config/db";
 import { v4 as uuidv4 } from "uuid";
-import { GridFSBucket, GridFSFile } from "mongodb";
+import mongoose, { Types } from "mongoose";
+import { PassThrough } from "stream";
 import MovieModel from "../models/movie.model";
 import { MovieUserInput, Movie, MoviesQuery, MovieUpdate, User } from "../types";
-import { gfs } from "../config/db";
-import { PassThrough } from "stream";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -16,11 +16,11 @@ const HOST = process.env.HOST;
 class MovieService {
   constructor(private movieModel: MovieModel) {}
 
-  async uploadFileToGridFS(file: Express.Multer.File, userId: Types.ObjectId) {
+  async uploadFileToGridFS(file: { buffer: Buffer; originalname: string }, userId: Types.ObjectId) {
     const dirName = uuidv4();
 
     if (!gfs) {
-      throw new Error('GridFSBucket not initialized');
+      throw new Error("GridFSBucket not initialized");
     }
 
     const writeStream = gfs.openUploadStream(file.originalname, {
@@ -36,10 +36,7 @@ class MovieService {
     return { fileUrl, id: dirName };
   }
 
-  async createMovie(
-    data: MovieUserInput,
-    user: Document<unknown, any, User> & User
-  ) {
+  async createMovie(data: MovieUserInput, user: User) {
     return await this.movieModel.createMovie({ ...data, userId: user._id });
   }
 
@@ -50,18 +47,10 @@ class MovieService {
     });
   }
 
-  async getMovieList(
-    query: MoviesQuery,
-    user: Document<unknown, any, User> & User
-  ) {
+  async getMovieList(query: MoviesQuery, user: User) {
     const allMovies = await this.getAllNotDeletedMovies(user._id);
 
-    let limit;
-    if (Number(query.limit) <= 8) {
-      limit = 8;
-    } else {
-      limit = Number(query.limit) || 8;
-    }
+    const limit = Math.min(Number(query.limit) || 8, 8);
 
     const moviesModel = this.movieModel.model
       .find({ deleted: { $ne: true }, userId: user._id })
@@ -95,33 +84,15 @@ class MovieService {
     return movie;
   }
 
-  async updateMovie(data: {
-    movie: Partial<MovieUpdate>;
-    id: string;
-    userId: Types.ObjectId;
-  }) {
+  async updateMovie(data: { movie: Partial<MovieUpdate>; id: string; userId: Types.ObjectId }) {
     return await this.movieModel.updateMovie(data);
   }
 
   async deleteMovieImage(id: string, userId: Types.ObjectId) {
-    const movieFile = await this.movieModel.getMovieFile(id, userId);
-
-    if (movieFile && Array.isArray(movieFile)) {
-      const file = movieFile[0] as GridFSFile;
-      if (file && gfs && file._id) {
-        await gfs.delete(new mongoose.Types.ObjectId(file._id));
-      } else {
-        throw new Error('File _id is missing or GridFS not initialized');
-      }
-    } else if (movieFile && !Array.isArray(movieFile)) {
-      const file = movieFile as GridFSFile;
-      if (file && gfs && file._id) {
-        await gfs.delete(new mongoose.Types.ObjectId(file._id));
-      } else {
-        throw new Error('File _id is missing or GridFS not initialized');
-      }
+    if (gfs) {
+      await gfs.delete(new mongoose.Types.ObjectId(id));
     } else {
-      throw new Error('No file found');
+      throw new Error("No file found");
     }
   }
 
@@ -130,15 +101,12 @@ class MovieService {
     return await this.movieModel.deleteMovie(id, userId);
   }
 
-  async updateMovieImage(data: {
-    file: Express.Multer.File;
-    id: string;
-    userId: Types.ObjectId;
-  }) {
-    const { file, userId, id } = data;
+  async updateMovieImage(data: { file: { buffer: Buffer; originalname: string }; id: string; userId: Types.ObjectId }) {
+    await this.deleteMovieImage(data.id, data.userId);
+    return await this.uploadFileToGridFS(data.file, data.userId);
+  }
 
-    await this.deleteMovieImage(id, userId);
-
+  async createMovieImage(file: { buffer: Buffer; originalname: string }, userId: Types.ObjectId) {
     return await this.uploadFileToGridFS(file, userId);
   }
 }

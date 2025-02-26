@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { Service } from "typedi";
-
 import MovieService from "../services/movie.service";
 import { MovieOptionalSchema, MovieSchema } from "../validation";
 import BaseController from "./base.controller";
+import { UploadedFile } from "express-fileupload";
+import { Readable } from "stream";
 
 @Service()
 class MovieController extends BaseController {
@@ -84,17 +85,30 @@ class MovieController extends BaseController {
     }
   }
 
+  
   async createMovieImage(request: Request, response: Response) {
     try {
-      if (request.files?.file && request.context && request.context.user) {
-        const file = request.files.file;
-        if (!Array.isArray(file)) {
-          const data = await this.movieService.createMovieImage(
-            file,
-            request.context.user._id
-          );
-          return this.formatSuccessResponse(response, data);
-        }
+      if (request.files?.file && request.context?.user) {
+        const uploadedFile = Array.isArray(request.files.file)
+          ? request.files.file[0]
+          : request.files.file;
+
+        const file = {
+          ...uploadedFile,
+          fieldname: "file",
+          originalname: uploadedFile.name,
+          encoding: "7bit",
+          mimetype: uploadedFile.mimetype,
+          size: uploadedFile.size,
+          stream: Readable.from(uploadedFile.data),
+          buffer: uploadedFile.data,
+        };
+
+        const data = await this.movieService.createMovieImage(
+          file,
+          request.context.user._id
+        );
+        return this.formatSuccessResponse(response, data);
       }
       return this.formatErrorResponse(response, "No file");
     } catch (error) {
@@ -102,18 +116,32 @@ class MovieController extends BaseController {
     }
   }
 
+  
   async updateMovieImage(request: Request, response: Response) {
     try {
-      if (request.files?.file && request.context && request.context.user) {
-        const file = request.files.file;
-        if (!Array.isArray(file)) {
-          const data = await this.movieService.updateMovieImage({
-            file,
-            id: request.params.id,
-            userId: request.context.user._id,
-          });
-          return this.formatSuccessResponse(response, data);
-        }
+      if (request.files?.file && request.context?.user) {
+        const uploadedFile = Array.isArray(request.files.file)
+          ? request.files.file[0]
+          : request.files.file;
+
+        const file = {
+          ...uploadedFile,
+          fieldname: "file",
+          originalname: uploadedFile.name,
+          encoding: "7bit",
+          mimetype: uploadedFile.mimetype,
+          size: uploadedFile.size,
+          stream: Readable.from(uploadedFile.data),
+          buffer: uploadedFile.data,
+        };
+
+        const data = await this.movieService.updateMovieImage({
+          file,
+          id: request.params.id,
+          userId: request.context.user._id,
+        });
+
+        return this.formatSuccessResponse(response, data);
       }
       return this.formatErrorResponse(response, "No file");
     } catch (error) {

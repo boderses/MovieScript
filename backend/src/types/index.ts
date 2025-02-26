@@ -1,8 +1,10 @@
-import { Document, Types } from "mongoose";
+import { Document, Types, ObjectId } from "mongoose";
 import { z as zod } from "zod";
+import { UploadedFile } from "express-fileupload";
+import { Readable } from "stream";
+
 import {
   CategoryUserInputSchema,
-  CategoryDatabaseSchema,
   MovieSchema,
   CategoryOptionalSchema,
   MovieOptionalSchema,
@@ -10,7 +12,7 @@ import {
   UserRegisterSchema,
 } from "../validation";
 
-type UserId = {
+export type UserId = {
   userId: Types.ObjectId;
 };
 
@@ -43,6 +45,29 @@ export type User = {
   createdAt: Date;
   updatedAt: Date;
   token: string;
+};
+
+export type MovieFile = {
+  _id: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  metadata: {
+    userId: Types.ObjectId;
+    dirName: string;
+  };
+};
+
+export type CustomFile = UploadedFile & {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  stream: Readable;
+  destination: string;
+  path: string;
 };
 
 export type Context = {
