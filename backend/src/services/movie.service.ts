@@ -37,6 +37,9 @@ class MovieService {
   }
 
   async createMovie(data: MovieUserInput, user: User) {
+    if (!data.title || !data.description || !data.duration || !data.releaseDate || !data.grade || !data.categories || !data.imagePath) {
+      throw new Error("Missing required fields");
+    }
     return await this.movieModel.createMovie({ ...data, userId: user._id });
   }
 
